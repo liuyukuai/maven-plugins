@@ -1,6 +1,7 @@
 package com.itxiaoer.plugins.mybatis;
 
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
@@ -14,7 +15,8 @@ import java.util.Objects;
  *
  * @author : liuyk
  */
-@SuppressWarnings("unused")
+@Slf4j
+@SuppressWarnings("ALL")
 public class DomainExtendPlugin extends PluginAdapter {
 
     @Override
@@ -42,7 +44,6 @@ public class DomainExtendPlugin extends PluginAdapter {
         for (InnerEnum innerEnum : innerEnums) {
             innerEnum.addAnnotation("@SuppressWarnings(\"ALL\")");
         }
-
 
 
         String author = this.getProperties().getProperty("author");
@@ -77,9 +78,52 @@ public class DomainExtendPlugin extends PluginAdapter {
                 "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
                 "\")");
 
+
+        String validate = properties.getProperty("validate");
+
+        if (!Objects.isNull(validate) && !validate.isEmpty()) {
+
+            // 生成校验规则
+            String javaProperty = introspectedColumn.getJavaProperty();
+            boolean nullable = introspectedColumn.isNullable();
+            int length = introspectedColumn.getLength();
+            int scale = introspectedColumn.getScale();
+
+
+            topLevelClass.addImportedType("javax.validation.constraints.Size");
+            topLevelClass.addImportedType("javax.validation.constraints.NotBlank");
+            topLevelClass.addImportedType("javax.validation.constraints.Digits");
+            topLevelClass.addImportedType("javax.validation.constraints.NotEmpty");
+
+            if (!Objects.equals("id", javaProperty)) {
+                // 不能为空
+
+
+                String jdbcTypeName = introspectedColumn.getJdbcTypeName();
+                if (Objects.equals(jdbcTypeName, "BIGINT") || Objects.equals(jdbcTypeName, "INTEGER") || Objects.equals("DECIMAL", jdbcTypeName)) {
+                    if (!nullable) {
+                        field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
+                    }
+                    field.addAnnotation(" @Digits(integer = " + length + ", fraction = " + scale + ", message = \"" + introspectedColumn.getRemarks() + "只能为数字\")");
+                }
+
+                if (Objects.equals("VARCHAR", jdbcTypeName)) {
+                    if (!nullable) {
+                        field.addAnnotation("@NotBlank(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
+                    }
+                    field.addAnnotation("@Size(max = " + length + ", message = \"" + introspectedColumn.getRemarks() + "不能超过" + length + "位\")");
+                }
+
+                if (Objects.equals("DATE", jdbcTypeName)) {
+                    if (!nullable) {
+                        field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
+                    }
+                    field.addAnnotation("@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_PATTERN, timezone = \"GMT+8\")");
+                }
+            }
+        }
         return super.modelFieldGenerated(field, topLevelClass, introspectedColumn, introspectedTable, modelClassType);
     }
-
 
 
 }

@@ -3,8 +3,11 @@ package com.itxiaoer.plugins.mybatis;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.dom.java.Field;
+import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
 import org.mybatis.generator.internal.DefaultCommentGenerator;
 import org.mybatis.generator.internal.util.StringUtility;
+
+import java.util.Set;
 
 /**
  * @author : liuyk
@@ -28,5 +31,15 @@ public class CommentGenerator extends DefaultCommentGenerator {
 
         field.addJavaDocLine(" *");
         field.addJavaDocLine(" */");
+    }
+
+    @Override
+    public void addFieldAnnotation(Field field, IntrospectedTable introspectedTable, Set<FullyQualifiedJavaType> imports) {
+        super.addFieldAnnotation(field, introspectedTable, imports);
+    }
+
+    @Override
+    public void addFieldAnnotation(Field field, IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn, Set<FullyQualifiedJavaType> imports) {
+        super.addFieldAnnotation(field, introspectedTable, introspectedColumn, imports);
     }
 }
