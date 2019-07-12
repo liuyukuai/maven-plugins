@@ -45,7 +45,6 @@ public class DomainExtendPlugin extends PluginAdapter {
             innerEnum.addAnnotation("@SuppressWarnings(\"ALL\")");
         }
 
-
         String author = this.getProperties().getProperty("author");
         topLevelClass.addJavaDocLine("/**");
         topLevelClass.addJavaDocLine("* " + introspectedTable.getRemarks());

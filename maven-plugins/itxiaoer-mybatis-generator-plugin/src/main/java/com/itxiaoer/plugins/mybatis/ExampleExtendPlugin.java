@@ -34,8 +34,10 @@ public class ExampleExtendPlugin extends PluginAdapter {
             field.setVisibility(JavaVisibility.PRIVATE);
         }
 
+        String shortName = introspectedTable.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType().getShortName();
+
         // interface
-        String interfaceClass = properties.getProperty("interface");
+        String interfaceClass = properties.getProperty("interface") + "<" + shortName + ">";
 
         // 需要重写的方法，逗号隔开
         String methodsNames = properties.getProperty("methods");
@@ -64,7 +66,16 @@ public class ExampleExtendPlugin extends PluginAdapter {
             innerClass.setAbstract(false);
         }
 
+        Method method = new Method();
 
+        method.addAnnotation("@Override");
+        method.setReturnType(topLevelClass.getType());
+        method.setName("ids");
+        method.setVisibility(JavaVisibility.PUBLIC);
+        method.addParameter(new Parameter(new FullyQualifiedJavaType("List<" + shortName + ">"), "ids"));
+        method.addBodyLine("this.createCriteria().andIdIn(ids);");
+        method.addBodyLine("return this;");
+        topLevelClass.addMethod(method);
         return super.modelExampleClassGenerated(topLevelClass, introspectedTable);
     }
 
