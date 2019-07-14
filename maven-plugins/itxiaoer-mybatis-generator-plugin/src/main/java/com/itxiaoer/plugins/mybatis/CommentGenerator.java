@@ -21,10 +21,7 @@ public class CommentGenerator extends DefaultCommentGenerator {
         String remarks = introspectedColumn.getRemarks();
         if (StringUtility.stringHasValue(remarks)) {
             String[] remarkLines = remarks.split(System.getProperty("line.separator"));
-            int var7 = remarkLines.length;
-
-            for (int var8 = 0; var8 < var7; ++var8) {
-                String remarkLine = remarkLines[var8];
+            for (String remarkLine : remarkLines) {
                 field.addJavaDocLine(" *   " + remarkLine);
             }
         }

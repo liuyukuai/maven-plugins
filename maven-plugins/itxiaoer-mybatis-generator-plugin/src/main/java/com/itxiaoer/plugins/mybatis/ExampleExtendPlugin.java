@@ -66,6 +66,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             innerClass.setAbstract(false);
         }
 
+        // 添加ids方法
         Method method = new Method();
 
         method.addAnnotation("@Override");
@@ -76,6 +77,55 @@ public class ExampleExtendPlugin extends PluginAdapter {
         method.addBodyLine("this.createCriteria().andIdIn(ids);");
         method.addBodyLine("return this;");
         topLevelClass.addMethod(method);
+
+
+        //添加分页方法
+        topLevelClass.addImportedType("java.util.*");
+        topLevelClass.addImportedType("java.util.stream.Collectors");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
+        topLevelClass.addImportedType("net.tsingyun.commons.mybaties.util.PagingUtils");
+        topLevelClass.addImportedType("net.tsingyun.commons.mybaties.PageRequest");
+
+
+        String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
+        String targetPackage = this.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
+        topLevelClass.addStaticImport(targetPackage + "." + domainObjectName + ".Column");
+
+        Method getColumn = new Method();
+        getColumn.setReturnType(new FullyQualifiedJavaType("String"));
+        getColumn.setName("getColumn");
+        getColumn.setVisibility(JavaVisibility.PRIVATE);
+        getColumn.addParameter(new Parameter(new FullyQualifiedJavaType("String"), "name"));
+        getColumn.addBodyLine("Column[] values = " + domainObjectName + ".Column.values();");
+        getColumn.addBodyLine("for (" + domainObjectName + ".Column value : values) {");
+        getColumn.addBodyLine("if (Objects.equals(value.getJavaProperty(), name)) {");
+        getColumn.addBodyLine("return value.getEscapedColumnName();");
+        getColumn.addBodyLine("}");
+        getColumn.addBodyLine("}");
+        getColumn.addBodyLine("throw new RuntimeException(name + \"属性名不合法\");");
+        topLevelClass.addMethod(getColumn);
+
+
+        Method page = new Method();
+        page.addAnnotation("@Override");
+        page.setReturnType(topLevelClass.getType());
+        page.setName("page");
+        page.setVisibility(JavaVisibility.PUBLIC);
+        page.addParameter(new Parameter(new FullyQualifiedJavaType("Paging"), "paging"));
+        page.addBodyLine("if (!Objects.isNull(paging)) {");
+        page.addBodyLine("PageRequest pageRequest = PagingUtils.of(paging);");
+        page.addBodyLine("List<Sort> sorts = pageRequest.getSorts();");
+        page.addBodyLine("if (Lists.iterable(sorts)) {");
+        page.addBodyLine("String orders = sorts.stream().map(e -> this.getColumn(e.getName()) + \" \" + e.getDirection()).collect(Collectors.joining(\",\"));");
+        page.addBodyLine(" this.setOrderByClause(orders);");
+        page.addBodyLine("}");
+        page.addBodyLine("this.page(pageRequest.getPage(), pageRequest.getSize());");
+        page.addBodyLine("}");
+        page.addBodyLine("return this;");
+
+        topLevelClass.addMethod(page);
         return super.modelExampleClassGenerated(topLevelClass, introspectedTable);
     }
 
