@@ -1,5 +1,6 @@
 package com.itxiaoer.plugins.mybatis;
 
+import com.itxiaoer.commons.core.date.LocalDateTimeUtil;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.IntrospectedColumn;
@@ -7,6 +8,7 @@ import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -72,10 +74,7 @@ public class DomainExtendPlugin extends PluginAdapter {
         }
         topLevelClass.addImportedType(apiModelAnnotationPackage);
         topLevelClass.addImportedType(apiModelPropertyAnnotationPackage);
-        field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
-                "\",name=\"" + introspectedColumn.getJavaProperty() +
-                "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
-                "\")");
+
 
 
         String validate = properties.getProperty("validate");
@@ -101,11 +100,32 @@ public class DomainExtendPlugin extends PluginAdapter {
 
 
                 String jdbcTypeName = introspectedColumn.getJdbcTypeName();
-                if (Objects.equals(jdbcTypeName, "BIGINT") || Objects.equals(jdbcTypeName, "INTEGER") || Objects.equals("DECIMAL", jdbcTypeName)) {
+                if (Objects.equals(jdbcTypeName, "BIGINT") || Objects.equals(jdbcTypeName, "INTEGER")) {
                     if (!nullable) {
                         field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
                     }
                     field.addAnnotation(" @Digits(integer = " + length + ", fraction = " + scale + ", message = \"" + introspectedColumn.getRemarks() + "只能为数字\")");
+
+                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
+                            "\",name=\"" + introspectedColumn.getJavaProperty() +
+                            "\",example=\"" + (length * 1) +
+                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
+                            "\")");
+
+
+                }
+
+                if (Objects.equals("DECIMAL", jdbcTypeName)) {
+                    if (!nullable) {
+                        field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
+                    }
+                    field.addAnnotation(" @Digits(integer = " + length + ", fraction = " + scale + ", message = \"" + introspectedColumn.getRemarks() + "只能为数字\")");
+
+                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
+                            "\",name=\"" + introspectedColumn.getJavaProperty() +
+                            "\",example=\"" + (length * 1) + "." + 12 +
+                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
+                            "\")");
                 }
 
                 if (Objects.equals("VARCHAR", jdbcTypeName)) {
@@ -113,15 +133,42 @@ public class DomainExtendPlugin extends PluginAdapter {
                         field.addAnnotation("@NotBlank(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
                     }
                     field.addAnnotation("@Size(max = " + length + ", message = \"" + introspectedColumn.getRemarks() + "不能超过" + length + "位\")");
-                }
+                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
+                            "\",name=\"" + introspectedColumn.getJavaProperty() +
+                            "\",example=\"" + introspectedColumn.getRemarks() +
+                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
+                            "\")");
 
+                }
                 if (Objects.equals("DATE", jdbcTypeName)) {
                     if (!nullable) {
                         field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
                     }
                     field.addAnnotation("@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_PATTERN, timezone = \"GMT+8\")");
+                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
+                            "\",name=\"" + introspectedColumn.getJavaProperty() +
+                            "\",example=\"" + LocalDateTimeUtil.format(LocalDate.now(), "yyyy-MM-dd") +
+                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
+                            "\")");
+                }
+
+                if (Objects.equals("DATETIME", jdbcTypeName)) {
+                    if (!nullable) {
+                        field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
+                    }
+                    field.addAnnotation("@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_PATTERN, timezone = \"GMT+8\")");
+                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
+                            "\",name=\"" + introspectedColumn.getJavaProperty() +
+                            "\",example=\"" + LocalDateTimeUtil.format(LocalDate.now(), "yyyy-MM-dd hh:mm:ss") +
+                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
+                            "\")");
                 }
             }
+        }else {
+            field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
+                    "\",name=\"" + introspectedColumn.getJavaProperty() +
+                    "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
+                    "\")");
         }
         return super.modelFieldGenerated(field, topLevelClass, introspectedColumn, introspectedTable, modelClassType);
     }
