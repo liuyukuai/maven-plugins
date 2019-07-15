@@ -4,7 +4,7 @@
 
     <groupId>com.itxiaoer.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.6</version>
     <modules>
         <module>itxiaoer-mybatis-generator-plugin</module>
     </modules>
@@ -48,7 +48,7 @@
             scm:git:https://github.com/liuyukuai/maven-plugins.git
         </developerConnection>
         <url>https://github.com/liuyukuai/maven-plugins</url>
-        <tag>v1.0.0</tag>
+        <tag>v1.0.6</tag>
     </scm>
 
     <distributionManagement>
