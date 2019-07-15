@@ -94,6 +94,7 @@ public class DomainExtendPlugin extends PluginAdapter {
             topLevelClass.addImportedType("javax.validation.constraints.Digits");
             topLevelClass.addImportedType("javax.validation.constraints.NotEmpty");
             topLevelClass.addImportedType("net.tsingyun.commons.core.Constants");
+            topLevelClass.addImportedType("com.fasterxml.jackson.annotation.JsonFormat");
 
             if (!Objects.equals("id", javaProperty)) {
                 // 不能为空
