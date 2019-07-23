@@ -1,7 +1,9 @@
 package com.itxiaoer.plugins.mybatis;
 
 
+import com.itxiaoer.commons.core.util.Lists;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
+import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.*;
@@ -34,7 +36,13 @@ public class ExampleExtendPlugin extends PluginAdapter {
             field.setVisibility(JavaVisibility.PRIVATE);
         }
 
-        String shortName = introspectedTable.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType().getShortName();
+        List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
+
+        String shortName = "Long";
+        if (Lists.iterable(primaryKeyColumns)) {
+            shortName = primaryKeyColumns.get(0).getFullyQualifiedJavaType().getShortName();
+        }
+
 
         // interface
         String interfaceClass = properties.getProperty("interface") + "<" + shortName + ">";

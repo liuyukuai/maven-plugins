@@ -1,7 +1,9 @@
 package com.itxiaoer.plugins.mybatis;
 
+import com.itxiaoer.commons.core.util.Lists;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
@@ -44,7 +46,14 @@ public class MapperExtendPlugin extends PluginAdapter {
         // domain name
         String domainObjectName = introspectedTable.getFullyQualifiedTable().getDomainObjectName();
         // key 
-        String shortName = introspectedTable.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType().getShortName();
+
+        List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
+
+        String shortName = "Long";
+        if (Lists.iterable(primaryKeyColumns)) {
+            shortName = primaryKeyColumns.get(0).getFullyQualifiedJavaType().getShortName();
+        }
+
         // exampleType
         String exampleType = introspectedTable.getExampleType();
         // interface
