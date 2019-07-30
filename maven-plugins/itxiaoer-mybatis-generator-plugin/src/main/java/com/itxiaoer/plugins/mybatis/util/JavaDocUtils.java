@@ -14,16 +14,22 @@ import java.util.Objects;
 public final class JavaDocUtils {
 
     public static void addJavaDoc(Method method) {
+
         // 处理参数的问题
         List<Parameter> parameters = method.getParameters();
         List<String> javaDocLines = method.getJavaDocLines();
-        parameters.forEach(p -> {
-            javaDocLines.add(javaDocLines.size() - 2, " * @param " + p.getName() + " " + p.getName());
-        });
+        javaDocLines.clear();
+        javaDocLines.add("/**");
+        javaDocLines.add("* " + method.getName());
+        javaDocLines.add("* ");
+        parameters.forEach(p -> 
+            javaDocLines.add("* @param " + p.getName() + " " + p.getName())
+        );
         FullyQualifiedJavaType returnType = method.getReturnType();
         if (!Objects.isNull(returnType)) {
-            javaDocLines.add(javaDocLines.size() - 2, " * @return " + returnType.getFullyQualifiedNameWithoutTypeParameters());
+            javaDocLines.add("* @return " + returnType.getFullyQualifiedNameWithoutTypeParameters());
         }
-
+        javaDocLines.add("* ");
+        javaDocLines.add("**/");
     }
 }

@@ -4,6 +4,7 @@ import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.dom.java.Field;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
+import org.mybatis.generator.api.dom.java.Method;
 import org.mybatis.generator.internal.DefaultCommentGenerator;
 import org.mybatis.generator.internal.util.StringUtility;
 
@@ -28,6 +29,20 @@ public class CommentGenerator extends DefaultCommentGenerator {
 
         field.addJavaDocLine(" *");
         field.addJavaDocLine(" */");
+    }
+
+    @Override
+    public void addFieldComment(Field field, IntrospectedTable introspectedTable) {
+        super.addFieldComment(field, introspectedTable);
+    }
+
+    @Override
+    public void addGeneralMethodComment(Method method, IntrospectedTable introspectedTable) {
+        StringBuilder sb = new StringBuilder();
+        method.addJavaDocLine("/**");
+        sb.append(introspectedTable.getFullyQualifiedTable());
+        method.addJavaDocLine(sb.toString());
+        method.addJavaDocLine(" */");
     }
 
     @Override

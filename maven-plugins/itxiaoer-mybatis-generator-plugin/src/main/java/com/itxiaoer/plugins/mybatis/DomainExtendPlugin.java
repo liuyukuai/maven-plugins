@@ -1,6 +1,5 @@
 package com.itxiaoer.plugins.mybatis;
 
-import com.itxiaoer.commons.core.date.LocalDateTimeUtil;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.IntrospectedColumn;
@@ -8,7 +7,6 @@ import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,23 +58,6 @@ public class DomainExtendPlugin extends PluginAdapter {
     @Override
     public boolean modelFieldGenerated(Field field, TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn, IntrospectedTable introspectedTable, ModelClassType modelClassType) {
 
-        String classAnnotation = "@ApiModel(value=\"" + introspectedTable.getRemarks() + "\")";
-        if (!topLevelClass.getAnnotations().contains(classAnnotation)) {
-            topLevelClass.addAnnotation(classAnnotation);
-        }
-        String apiModelAnnotationPackage = this.properties.getProperty("apiModelAnnotationPackage");
-        String apiModelPropertyAnnotationPackage = this.properties.getProperty("apiModelPropertyAnnotationPackage");
-        if (Objects.isNull(apiModelAnnotationPackage) || apiModelPropertyAnnotationPackage.isEmpty()) {
-            apiModelAnnotationPackage = "io.swagger.annotations.ApiModel";
-        }
-        if (Objects.isNull(apiModelPropertyAnnotationPackage) || apiModelPropertyAnnotationPackage.isEmpty()) {
-            apiModelPropertyAnnotationPackage = "io.swagger.annotations.ApiModelProperty";
-        }
-        topLevelClass.addImportedType(apiModelAnnotationPackage);
-        topLevelClass.addImportedType(apiModelPropertyAnnotationPackage);
-
-
-
         String validate = properties.getProperty("validate");
 
         if (!Objects.isNull(validate) && !validate.isEmpty()) {
@@ -105,14 +86,6 @@ public class DomainExtendPlugin extends PluginAdapter {
                         field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
                     }
                     field.addAnnotation(" @Digits(integer = " + length + ", fraction = " + scale + ", message = \"" + introspectedColumn.getRemarks() + "只能为数字\")");
-
-                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
-                            "\",name=\"" + introspectedColumn.getJavaProperty() +
-                            "\",example=\"" + (length * 1) +
-                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
-                            "\")");
-
-
                 }
 
                 if (Objects.equals("DECIMAL", jdbcTypeName)) {
@@ -121,11 +94,6 @@ public class DomainExtendPlugin extends PluginAdapter {
                     }
                     field.addAnnotation(" @Digits(integer = " + length + ", fraction = " + scale + ", message = \"" + introspectedColumn.getRemarks() + "只能为数字\")");
 
-                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
-                            "\",name=\"" + introspectedColumn.getJavaProperty() +
-                            "\",example=\"" + (length * 1) + "." + 12 +
-                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
-                            "\")");
                 }
 
                 if (Objects.equals("VARCHAR", jdbcTypeName)) {
@@ -133,11 +101,6 @@ public class DomainExtendPlugin extends PluginAdapter {
                         field.addAnnotation("@NotBlank(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
                     }
                     field.addAnnotation("@Size(max = " + length + ", message = \"" + introspectedColumn.getRemarks() + "不能超过" + length + "位\")");
-                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
-                            "\",name=\"" + introspectedColumn.getJavaProperty() +
-                            "\",example=\"" + introspectedColumn.getRemarks() +
-                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
-                            "\")");
 
                 }
                 if (Objects.equals("DATE", jdbcTypeName)) {
@@ -145,11 +108,6 @@ public class DomainExtendPlugin extends PluginAdapter {
                         field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
                     }
                     field.addAnnotation("@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_PATTERN, timezone = \"GMT+8\")");
-                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
-                            "\",name=\"" + introspectedColumn.getJavaProperty() +
-                            "\",example=\"" + LocalDateTimeUtil.format(LocalDate.now(), "yyyy-MM-dd") +
-                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
-                            "\")");
                 }
 
                 if (Objects.equals("DATETIME", jdbcTypeName)) {
@@ -157,18 +115,9 @@ public class DomainExtendPlugin extends PluginAdapter {
                         field.addAnnotation("@NotEmpty(message = \"" + introspectedColumn.getRemarks() + "不能为空\")");
                     }
                     field.addAnnotation("@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_PATTERN, timezone = \"GMT+8\")");
-                    field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
-                            "\",name=\"" + introspectedColumn.getJavaProperty() +
-                            "\",example=\"" + LocalDateTimeUtil.format(LocalDate.now(), "yyyy-MM-dd hh:mm:ss") +
-                            "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
-                            "\")");
+
                 }
             }
-        }else {
-            field.addAnnotation("@ApiModelProperty(value=\"" + introspectedColumn.getRemarks() +
-                    "\",name=\"" + introspectedColumn.getJavaProperty() +
-                    "\",dataType=\"" + introspectedColumn.getFullyQualifiedJavaType().getShortName() +
-                    "\")");
         }
         return super.modelFieldGenerated(field, topLevelClass, introspectedColumn, introspectedTable, modelClassType);
     }

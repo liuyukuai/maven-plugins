@@ -77,4 +77,7 @@ public class MapperExtendPlugin extends PluginAdapter {
 
         return super.clientGenerated(interfaze, topLevelClass, introspectedTable);
     }
+
+
 }
+
