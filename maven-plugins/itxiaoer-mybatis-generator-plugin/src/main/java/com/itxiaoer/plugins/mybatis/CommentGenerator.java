@@ -23,11 +23,9 @@ public class CommentGenerator extends DefaultCommentGenerator {
         if (StringUtility.stringHasValue(remarks)) {
             String[] remarkLines = remarks.split(System.getProperty("line.separator"));
             for (String remarkLine : remarkLines) {
-                field.addJavaDocLine(" *   " + remarkLine);
+                field.addJavaDocLine(" * " + remarkLine);
             }
         }
-
-        field.addJavaDocLine(" *");
         field.addJavaDocLine(" */");
     }
 
