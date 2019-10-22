@@ -33,7 +33,9 @@ public class CommentGenerator extends DefaultCommentGenerator {
 
     @Override
     public void addFieldComment(Field field, IntrospectedTable introspectedTable) {
-        super.addFieldComment(field, introspectedTable);
+        field.addJavaDocLine("/**");
+        field.addJavaDocLine(" * " + field.getName());
+        field.addJavaDocLine(" */");
     }
 
     @Override
