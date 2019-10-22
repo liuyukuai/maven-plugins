@@ -2,9 +2,7 @@ package com.itxiaoer.plugins.mybatis;
 
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
-import org.mybatis.generator.api.dom.java.Field;
-import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
-import org.mybatis.generator.api.dom.java.Method;
+import org.mybatis.generator.api.dom.java.*;
 import org.mybatis.generator.internal.DefaultCommentGenerator;
 import org.mybatis.generator.internal.util.StringUtility;
 
@@ -27,6 +25,21 @@ public class CommentGenerator extends DefaultCommentGenerator {
             }
         }
         field.addJavaDocLine(" */");
+    }
+
+    @Override
+    public void addClassComment(InnerClass innerClass, IntrospectedTable introspectedTable) {
+
+    }
+
+    @Override
+    public void addClassComment(InnerClass innerClass, IntrospectedTable introspectedTable, boolean markAsDoNotDelete) {
+        
+    }
+
+    @Override
+    public void addEnumComment(InnerEnum innerEnum, IntrospectedTable introspectedTable) {
+        
     }
 
     @Override
