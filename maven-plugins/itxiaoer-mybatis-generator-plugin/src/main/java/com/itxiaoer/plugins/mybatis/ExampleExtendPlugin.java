@@ -93,8 +93,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
         topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
         topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
         topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
-        topLevelClass.addImportedType("net.tsingyun.commons.mybaties.util.PagingUtils");
-        topLevelClass.addImportedType("net.tsingyun.commons.mybaties.PageRequest");
+        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.util.PagingUtils");
+        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
 
 
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
