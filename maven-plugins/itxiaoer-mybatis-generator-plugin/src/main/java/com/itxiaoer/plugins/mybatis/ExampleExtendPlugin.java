@@ -92,7 +92,18 @@ public class ExampleExtendPlugin extends PluginAdapter {
                 .map(IntrospectedColumn::getJavaProperty)
                 .collect(Collectors.toList());
 
-        if (names.contains("id")){
+        if (names.contains("id")) {
+            method.addAnnotation("@Override");
+            method.setReturnType(topLevelClass.getType());
+            method.setName("ids");
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<" + shortName + ">"), "ids"));
+            method.addBodyLine("this.createCriteria().andIdIn(ids);");
+            method.addBodyLine("return this;");
+            topLevelClass.addMethod(method);
+        }
+
+        if (names.contains("orgCode")) {
 
             // 添加orgCodes方法
             method = new Method();
@@ -107,17 +118,16 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
-        if (names.contains("orgCode")){
-            //添加分页方法
-            topLevelClass.addImportedType("java.util.*");
-            topLevelClass.addImportedType("java.util.stream.Collectors");
-            topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
-            topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
-            topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
-            topLevelClass.addImportedType("net.tsingyun.commons.mybatis.util.PagingUtils");
-            topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
 
-        }
+        //添加分页方法
+        topLevelClass.addImportedType("java.util.*");
+        topLevelClass.addImportedType("java.util.stream.Collectors");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
+        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.util.PagingUtils");
+        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
+
 
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
         String targetPackage = this.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
