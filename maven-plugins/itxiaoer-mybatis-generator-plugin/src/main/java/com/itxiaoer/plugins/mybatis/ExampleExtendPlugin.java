@@ -78,7 +78,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         Method method = new Method();
 
         // 名称集合
-        List<String> names = Lists.empty(primaryKeyColumns)
+        List<String> names = Lists.empty(introspectedTable.getAllColumns())
                 .stream()
                 .map(IntrospectedColumn::getJavaProperty)
                 .collect(Collectors.toList());
