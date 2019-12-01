@@ -77,15 +77,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
         // 添加ids方法
         Method method = new Method();
 
-        method.addAnnotation("@Override");
-        method.setReturnType(topLevelClass.getType());
-        method.setName("ids");
-        method.setVisibility(JavaVisibility.PUBLIC);
-        method.addParameter(new Parameter(new FullyQualifiedJavaType("List<" + shortName + ">"), "ids"));
-        method.addBodyLine("this.createCriteria().andIdIn(ids);");
-        method.addBodyLine("return this;");
-        topLevelClass.addMethod(method);
-
         // 名称集合
         List<String> names = Lists.empty(primaryKeyColumns)
                 .stream()
