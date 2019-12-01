@@ -95,7 +95,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         method.setName("orgCodes");
         method.setVisibility(JavaVisibility.PUBLIC);
         method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "orgCodes"));
-        method.addBodyLine("this.createCriteria().andOrgCodeIn(ids);");
+        method.addBodyLine("this.createCriteria().andOrgCodeIn(orgCodes);");
         method.addBodyLine("return this;");
         topLevelClass.addMethod(method);
 
