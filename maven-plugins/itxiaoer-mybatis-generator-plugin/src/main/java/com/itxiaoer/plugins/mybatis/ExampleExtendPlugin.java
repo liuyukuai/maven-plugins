@@ -86,29 +86,38 @@ public class ExampleExtendPlugin extends PluginAdapter {
         method.addBodyLine("return this;");
         topLevelClass.addMethod(method);
 
+        // 名称集合
+        List<String> names = Lists.empty(primaryKeyColumns)
+                .stream()
+                .map(IntrospectedColumn::getJavaProperty)
+                .collect(Collectors.toList());
 
-        // 添加orgCodes方法
-        method = new Method();
+        if (names.contains("id")){
 
-        method.addAnnotation("@Override");
-        method.setReturnType(topLevelClass.getType());
-        method.setName("orgCodes");
-        method.setVisibility(JavaVisibility.PUBLIC);
-        method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "orgCodes"));
-        method.addBodyLine("this.createCriteria().andOrgCodeIn(orgCodes);");
-        method.addBodyLine("return this;");
-        topLevelClass.addMethod(method);
+            // 添加orgCodes方法
+            method = new Method();
 
+            method.addAnnotation("@Override");
+            method.setReturnType(topLevelClass.getType());
+            method.setName("orgCodes");
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "orgCodes"));
+            method.addBodyLine("this.createCriteria().andOrgCodeIn(orgCodes);");
+            method.addBodyLine("return this;");
+            topLevelClass.addMethod(method);
+        }
 
-        //添加分页方法
-        topLevelClass.addImportedType("java.util.*");
-        topLevelClass.addImportedType("java.util.stream.Collectors");
-        topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
-        topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
-        topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
-        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.util.PagingUtils");
-        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
+        if (names.contains("orgCode")){
+            //添加分页方法
+            topLevelClass.addImportedType("java.util.*");
+            topLevelClass.addImportedType("java.util.stream.Collectors");
+            topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
+            topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
+            topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
+            topLevelClass.addImportedType("net.tsingyun.commons.mybatis.util.PagingUtils");
+            topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
 
+        }
 
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
         String targetPackage = this.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
