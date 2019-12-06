@@ -104,7 +104,15 @@ public class ExampleExtendPlugin extends PluginAdapter {
             method.setName("orgCodes");
             method.setVisibility(JavaVisibility.PUBLIC);
             method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "orgCodes"));
-            method.addBodyLine("this.createCriteria().andOrgCodeIn(orgCodes);");
+            method.addBodyLine("if (this.oredCriteria.size() == 0) {");
+            method.addBodyLine("Criteria criteria = this.createCriteriaInternal();");
+            method.addBodyLine("criteria.andOrgCodeIn(orgCodes);");
+            method.addBodyLine("this.oredCriteria.add(criteria);");
+            method.addBodyLine("} else {");
+            method.addBodyLine("for (Criteria oredCriterion : oredCriteria) {");
+            method.addBodyLine("oredCriterion.andOrgCodeIn(orgCodes);");
+            method.addBodyLine("}");
+            method.addBodyLine("}");
             method.addBodyLine("return this;");
             topLevelClass.addMethod(method);
         }
