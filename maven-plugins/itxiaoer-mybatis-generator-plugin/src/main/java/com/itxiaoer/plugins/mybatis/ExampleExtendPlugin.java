@@ -174,7 +174,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
                 .ifPresent(e -> {
                     // 设置方法
                     Method orLike = new Method();
-                    orLike.setReturnType(e.getType());
+                    orLike.setReturnType(new FullyQualifiedJavaType("Criteria"));
                     orLike.setVisibility(JavaVisibility.PUBLIC);
                     orLike.setName("orLike");
                     orLike.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
@@ -193,7 +193,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
 
                     // 设置方法
                     Method orEq = new Method();
-                    orEq.setReturnType(e.getType());
+                    orEq.setReturnType(new FullyQualifiedJavaType("Criteria"));
                     orEq.setVisibility(JavaVisibility.PUBLIC);
                     orEq.setName("orEq");
                     orEq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
