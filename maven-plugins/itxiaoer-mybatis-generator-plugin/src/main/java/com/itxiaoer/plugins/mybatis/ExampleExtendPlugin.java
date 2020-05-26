@@ -203,7 +203,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orEq.addBodyLine("}");
                     orEq.addBodyLine("List<String> sql = new ArrayList<>();");
                     orEq.addBodyLine("for (Column column : columns) {");
-                    orEq.addBodyLine("   sql.add(column.getEscapedColumnName() + \" = '\" + value+\"'\");");
+                    orEq.addBodyLine(" sql.add(column.getEscapedColumnName() + \" = '\" + value+\"'\");");
                     orEq.addBodyLine("}");
                     orEq.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
                     orEq.addBodyLine("return (Criteria) this;");
