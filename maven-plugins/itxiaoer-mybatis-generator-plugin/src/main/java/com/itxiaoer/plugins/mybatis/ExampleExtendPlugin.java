@@ -211,8 +211,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
 
                 });
 
-
-
         topLevelClass.addMethod(page);
         return super.modelExampleClassGenerated(topLevelClass, introspectedTable);
     }
