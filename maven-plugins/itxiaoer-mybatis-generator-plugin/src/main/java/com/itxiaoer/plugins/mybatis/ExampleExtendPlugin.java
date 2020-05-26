@@ -180,14 +180,14 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orLike.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
                     orLike.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
                     orLike.addBodyLine("if (Objects.isNull(value) || Objects.isNull(columns)) {");
-                    orLike.addBodyLine(" return this;");
+                    orLike.addBodyLine(" return (Criteria) this;");
                     orLike.addBodyLine("}");
                     orLike.addBodyLine("List<String> sql = new ArrayList<>();");
                     orLike.addBodyLine("for (Column column : columns) {");
                     orLike.addBodyLine(" sql.add(column.getEscapedColumnName() + \" like '%\" + StringEscapeUtils.escapeXSI(value.toString()) + \"%'\");");
                     orLike.addBodyLine("}");
                     orLike.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
-                    orLike.addBodyLine("return this;");
+                    orLike.addBodyLine("return (Criteria) this;");
                     e.addMethod(orLike);
 
 
@@ -199,14 +199,14 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orEq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
                     orEq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
                     orEq.addBodyLine("if (Objects.isNull(value) || Objects.isNull(columns)) {");
-                    orEq.addBodyLine(" return this;");
+                    orEq.addBodyLine(" return (Criteria) this;");
                     orEq.addBodyLine("}");
                     orEq.addBodyLine("List<String> sql = new ArrayList<>();");
                     orEq.addBodyLine("for (Column column : columns) {");
                     orEq.addBodyLine("   sql.add(column.getEscapedColumnName() + \" = '\" + value+\"'\");");
                     orEq.addBodyLine("}");
                     orEq.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
-                    orEq.addBodyLine("return this;");
+                    orEq.addBodyLine("return (Criteria) this;");
                     e.addMethod(orEq);
 
                 });
