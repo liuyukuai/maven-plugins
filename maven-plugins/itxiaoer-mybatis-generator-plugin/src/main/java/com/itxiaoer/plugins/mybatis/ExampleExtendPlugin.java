@@ -126,6 +126,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
         topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.util.PagingUtils");
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
+        topLevelClass.addImportedType("org.apache.commons.text.StringEscapeUtils");
+        topLevelClass.addImportedType("org.apache.commons.lang3.StringUtils");
 
 
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
@@ -163,6 +165,53 @@ public class ExampleExtendPlugin extends PluginAdapter {
         page.addBodyLine("this.page(pageRequest.getPage(), pageRequest.getSize());");
         page.addBodyLine("}");
         page.addBodyLine("return this;");
+
+
+        topLevelClass.getInnerClasses()
+                .stream()
+                .filter(e -> Objects.equals("GeneratedCriteria", e.getType().getShortName()))
+                .findAny()
+                .ifPresent(e -> {
+                    // 设置方法
+                    Method orLike = new Method();
+                    orLike.setReturnType(e.getType());
+                    orLike.setVisibility(JavaVisibility.PUBLIC);
+                    orLike.setName("orLike");
+                    orLike.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+                    orLike.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
+                    orLike.addBodyLine("if (Objects.isNull(value) || Objects.isNull(columns)) {");
+                    orLike.addBodyLine(" return this;");
+                    orLike.addBodyLine("}");
+                    orLike.addBodyLine("List<String> sql = new ArrayList<>();");
+                    orLike.addBodyLine("for (Column column : columns) {");
+                    orLike.addBodyLine(" sql.add(column.getEscapedColumnName() + \" like '%\" + StringEscapeUtils.escapeXSI(value.toString()) + \"%'\");");
+                    orLike.addBodyLine("}");
+                    orLike.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
+                    orLike.addBodyLine("return this;");
+                    e.addMethod(orLike);
+
+
+                    // 设置方法
+                    Method orEq = new Method();
+                    orEq.setReturnType(e.getType());
+                    orEq.setVisibility(JavaVisibility.PUBLIC);
+                    orEq.setName("orEq");
+                    orEq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+                    orEq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
+                    orEq.addBodyLine("if (Objects.isNull(value) || Objects.isNull(columns)) {");
+                    orEq.addBodyLine(" return this;");
+                    orEq.addBodyLine("}");
+                    orEq.addBodyLine("List<String> sql = new ArrayList<>();");
+                    orEq.addBodyLine("for (Column column : columns) {");
+                    orEq.addBodyLine("   sql.add(column.getEscapedColumnName() + \" = '\" + value+\"'\");");
+                    orEq.addBodyLine("}");
+                    orEq.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
+                    orEq.addBodyLine("return this;");
+                    e.addMethod(orEq);
+
+                });
+
+
 
         topLevelClass.addMethod(page);
         return super.modelExampleClassGenerated(topLevelClass, introspectedTable);
