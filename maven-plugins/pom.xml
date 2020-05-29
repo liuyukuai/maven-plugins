@@ -4,7 +4,7 @@
 
     <groupId>com.itxiaoer.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>1.0.28-SNAPSHOT</version>
+    <version>1.0.27-SNAPSHOT</version>
     <modules>
         <module>itxiaoer-mybatis-generator-plugin</module>
     </modules>
