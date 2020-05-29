@@ -98,7 +98,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
 
             // 添加orgCodes方法
             method = new Method();
-
             method.addAnnotation("@Override");
             method.setReturnType(topLevelClass.getType());
             method.setName("orgCodes");
@@ -133,6 +132,19 @@ public class ExampleExtendPlugin extends PluginAdapter {
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
         String targetPackage = this.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
         topLevelClass.addStaticImport(targetPackage + "." + domainObjectName + ".Column");
+
+        Method init = new Method();
+        init.setName("init");
+        init.addBodyLine("this.createCriteria();");
+        init.setVisibility(JavaVisibility.PUBLIC);
+        init.addAnnotation("@Override");
+        topLevelClass.addMethod(init);
+
+        topLevelClass.getMethods()
+                .stream()
+                .filter(Method::isConstructor)
+                .forEach(e -> e.setVisibility(JavaVisibility.PRIVATE));
+
 
         Method getColumn = new Method();
         getColumn.setReturnType(new FullyQualifiedJavaType("String"));
