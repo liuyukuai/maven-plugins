@@ -89,7 +89,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             method.setName("ids");
             method.setVisibility(JavaVisibility.PUBLIC);
             method.addParameter(new Parameter(new FullyQualifiedJavaType("List<" + shortName + ">"), "ids"));
-            method.addBodyLine("this.createCriteria().andIdIn(ids);");
+            method.addBodyLine("this.getOredCriteria().forEach(e -> e.andIdIn(ids));");
             method.addBodyLine("return this;");
             topLevelClass.addMethod(method);
         }
