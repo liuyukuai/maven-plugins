@@ -233,6 +233,9 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     or.addBodyLine("}");
                     or.addBodyLine("List<String> sql = new ArrayList<>();");
                     or.addBodyLine("for (Condition condition : conditions) {");
+                    or.addBodyLine("if (Objects.isNull(condition.getValue()) || StringUtils.isBlank(condition.getValue().toString())) {");
+                    or.addBodyLine(" continue;");
+                    or.addBodyLine("}");
                     or.addBodyLine(" sql.add(condition.getName() + \" \" + condition.getOperation() + \" '\" + condition.getValue() + \"'\");");
                     or.addBodyLine("}");
                     or.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
