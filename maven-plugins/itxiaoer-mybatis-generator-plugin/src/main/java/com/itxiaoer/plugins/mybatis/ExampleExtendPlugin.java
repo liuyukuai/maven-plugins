@@ -307,6 +307,18 @@ public class ExampleExtendPlugin extends PluginAdapter {
         notIn.addBodyLine("return init(column, value, \"not in\");");
         innerClass.addMethod(notIn);
 
+
+        Method in = new Method();
+        in.setReturnType(new FullyQualifiedJavaType("Condition"));
+        in.setVisibility(JavaVisibility.PUBLIC);
+        in.setStatic(true);
+        in.setName("in");
+        in.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        in.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+        in.addBodyLine("return init(column, value, \" in\");");
+        innerClass.addMethod(in);
+
+
         Method init = new Method();
         init.setReturnType(new FullyQualifiedJavaType("Condition"));
         init.setVisibility(JavaVisibility.PRIVATE);
