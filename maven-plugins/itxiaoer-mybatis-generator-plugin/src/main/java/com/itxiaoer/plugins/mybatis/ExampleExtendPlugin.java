@@ -116,7 +116,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
-
         //添加分页方法
         topLevelClass.addImportedType("java.util.*");
         topLevelClass.addImportedType("java.util.stream.Collectors");
@@ -127,7 +126,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
         topLevelClass.addImportedType("org.apache.commons.text.StringEscapeUtils");
         topLevelClass.addImportedType("org.apache.commons.lang3.StringUtils");
-
+        topLevelClass.addImportedType("lombok.Data");
 
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
         String targetPackage = this.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
@@ -178,6 +177,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
         page.addBodyLine("}");
         page.addBodyLine("return this;");
 
+        topLevelClass.addInnerClass(createCondition(domainObjectName));
+
 
         topLevelClass.getInnerClasses()
                 .stream()
@@ -221,10 +222,105 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orEq.addBodyLine("return (Criteria) this;");
                     e.addMethod(orEq);
 
+                    // 设置方法
+                    Method or = new Method();
+                    or.setReturnType(new FullyQualifiedJavaType("Criteria"));
+                    or.setVisibility(JavaVisibility.PUBLIC);
+                    or.setName("or");
+                    or.addParameter(new Parameter(new FullyQualifiedJavaType("Condition..."), "conditions"));
+                    or.addBodyLine("if (Objects.isNull(conditions) || conditions.length == 0) {");
+                    or.addBodyLine(" return (Criteria) this;");
+                    or.addBodyLine("}");
+                    or.addBodyLine("List<String> sql = new ArrayList<>();");
+                    or.addBodyLine("for (Condition condition : conditions) {");
+                    or.addBodyLine(" sql.add(condition.getName() + \" \" + condition.getOperation() + \" '\" + condition.getValue() + \"'\");");
+                    or.addBodyLine("}");
+                    or.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
+                    or.addBodyLine("return (Criteria) this;");
+                    e.addMethod(or);
                 });
 
         topLevelClass.addMethod(page);
         return super.modelExampleClassGenerated(topLevelClass, introspectedTable);
+    }
+
+
+    public InnerClass createCondition(String domainObjectName) {
+        // 添加内部类
+        InnerClass innerClass = new InnerClass("Condition");
+        innerClass.setStatic(true);
+        innerClass.setVisibility(JavaVisibility.PUBLIC);
+
+        Field name = new Field();
+        name.setName("name");
+        name.setType(new FullyQualifiedJavaType("String"));
+        name.setVisibility(JavaVisibility.PRIVATE);
+        innerClass.addField(name);
+
+        Field value = new Field();
+        value.setName("value");
+        value.setType(new FullyQualifiedJavaType("Object"));
+        value.setVisibility(JavaVisibility.PRIVATE);
+        innerClass.addField(value);
+
+        Field operation = new Field();
+        operation.setName("operation");
+        operation.setType(new FullyQualifiedJavaType("String"));
+        operation.setVisibility(JavaVisibility.PRIVATE);
+        innerClass.addField(operation);
+
+        innerClass.addAnnotation("@Data");
+
+
+        Method eq = new Method();
+        eq.setReturnType(new FullyQualifiedJavaType("Condition"));
+        eq.setVisibility(JavaVisibility.PUBLIC);
+        eq.setStatic(true);
+        eq.setName("eq");
+        eq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        eq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+        eq.addBodyLine("return init(column, value, \"=\");");
+        innerClass.addMethod(eq);
+
+
+        Method notEq = new Method();
+        notEq.setReturnType(new FullyQualifiedJavaType("Condition"));
+        notEq.setVisibility(JavaVisibility.PUBLIC);
+        notEq.setStatic(true);
+        notEq.setName("notEq");
+        notEq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        notEq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+        notEq.addBodyLine("return init(column, value, \"<>\");");
+        innerClass.addMethod(notEq);
+
+
+        Method notIn = new Method();
+        notIn.setReturnType(new FullyQualifiedJavaType("Condition"));
+        notIn.setVisibility(JavaVisibility.PUBLIC);
+        notIn.setStatic(true);
+        notIn.setName("notIn");
+        notIn.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        notIn.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+        notIn.addBodyLine("return init(column, value, \"not in\");");
+        innerClass.addMethod(notIn);
+
+        Method init = new Method();
+        init.setReturnType(new FullyQualifiedJavaType("Condition"));
+        init.setVisibility(JavaVisibility.PRIVATE);
+        init.setStatic(true);
+        init.setName("init");
+        init.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        init.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+        init.addParameter(new Parameter(new FullyQualifiedJavaType("String"), "operation"));
+        init.addBodyLine("Condition condition = new Condition();");
+        init.addBodyLine("condition.setName(column.getEscapedColumnName());");
+        init.addBodyLine("condition.setValue(value);");
+        init.addBodyLine("condition.setOperation(operation);");
+        init.addBodyLine("return condition;");
+        innerClass.addMethod(init);
+
+        return innerClass;
+
     }
 
 
