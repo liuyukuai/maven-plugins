@@ -192,7 +192,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orLike.setName("orLike");
                     orLike.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
                     orLike.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
-                    orLike.addBodyLine("if (Objects.isNull(value) || Objects.isNull(columns)) {");
+                    orLike.addBodyLine("if (Objects.isNull(value) || StringUtils.isBlank(value.toString()) || Objects.isNull(columns)) {");
                     orLike.addBodyLine(" return (Criteria) this;");
                     orLike.addBodyLine("}");
                     orLike.addBodyLine("List<String> sql = new ArrayList<>();");
@@ -211,7 +211,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orEq.setName("orEq");
                     orEq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
                     orEq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
-                    orEq.addBodyLine("if (Objects.isNull(value) || Objects.isNull(columns)) {");
+                    orEq.addBodyLine("if (Objects.isNull(value) || StringUtils.isBlank(value.toString()) || Objects.isNull(columns)) {");
                     orEq.addBodyLine(" return (Criteria) this;");
                     orEq.addBodyLine("}");
                     orEq.addBodyLine("List<String> sql = new ArrayList<>();");
