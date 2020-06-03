@@ -229,14 +229,18 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     or.setName("or");
                     or.addParameter(new Parameter(new FullyQualifiedJavaType("Condition..."), "conditions"));
                     or.addBodyLine("if (Objects.isNull(conditions) || conditions.length == 0) {");
-                    or.addBodyLine(" return (Criteria) this;");
+                    or.addBodyLine("return (Criteria) this;");
                     or.addBodyLine("}");
                     or.addBodyLine("List<String> sql = new ArrayList<>();");
                     or.addBodyLine("for (Condition condition : conditions) {");
                     or.addBodyLine("if (Objects.isNull(condition.getValue()) || StringUtils.isBlank(condition.getValue().toString())) {");
-                    or.addBodyLine(" continue;");
+                    or.addBodyLine("continue;");
                     or.addBodyLine("}");
-                    or.addBodyLine(" sql.add(condition.getName() + \" \" + condition.getOperation() + \" '\" + condition.getValue() + \"'\");");
+                    or.addBodyLine("if (Objects.equals(condition.getOperation(), \"in\") || Objects.equals(condition.getOperation(), \"not in\")) {");
+                    or.addBodyLine("sql.add(condition.getName() + \" \" + condition.getOperation() + \" \" + condition.getValue() + \"\");");
+                    or.addBodyLine("} else {");
+                    or.addBodyLine("sql.add(condition.getName() + \" \" + condition.getOperation() + \" '\" + condition.getValue() + \"'\");");
+                    or.addBodyLine("}");
                     or.addBodyLine("}");
                     or.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
                     or.addBodyLine("return (Criteria) this;");
@@ -304,6 +308,9 @@ public class ExampleExtendPlugin extends PluginAdapter {
         notIn.setName("notIn");
         notIn.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         notIn.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+        notIn.addBodyLine("if (value instanceof Collection) {");
+        notIn.addBodyLine("value = \"(\" + StringUtils.join((Collection) value, \",\") + \")\";");
+        notIn.addBodyLine("}");
         notIn.addBodyLine("return init(column, value, \"not in\");");
         innerClass.addMethod(notIn);
 
@@ -315,7 +322,10 @@ public class ExampleExtendPlugin extends PluginAdapter {
         in.setName("in");
         in.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         in.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
-        in.addBodyLine("return init(column, value, \" in\");");
+        in.addBodyLine("if (value instanceof Collection) {");
+        in.addBodyLine("value = \"(\" + StringUtils.join((Collection) value, \",\") + \")\";");
+        in.addBodyLine("}");
+        in.addBodyLine("return init(column, value, \"in\");");
         innerClass.addMethod(in);
 
 
