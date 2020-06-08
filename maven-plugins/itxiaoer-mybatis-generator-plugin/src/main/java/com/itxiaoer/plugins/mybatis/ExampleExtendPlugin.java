@@ -233,14 +233,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     or.addBodyLine("}");
                     or.addBodyLine("List<String> sql = new ArrayList<>();");
                     or.addBodyLine("for (Condition condition : conditions) {");
-                    or.addBodyLine("if (Objects.isNull(condition.getValue()) || StringUtils.isBlank(condition.getValue().toString())) {");
-                    or.addBodyLine("continue;");
-                    or.addBodyLine("}");
-                    or.addBodyLine("if (Objects.equals(condition.getOperation(), \"in\") || Objects.equals(condition.getOperation(), \"not in\")) {");
-                    or.addBodyLine("sql.add(condition.getName() + \" \" + condition.getOperation() + \" \" + condition.getValue() + \"\");");
-                    or.addBodyLine("} else {");
-                    or.addBodyLine("sql.add(condition.getName() + \" \" + condition.getOperation() + \" '\" + condition.getValue() + \"'\");");
-                    or.addBodyLine("}");
+                    or.addBodyLine("sql.add(condition.getSql());");
                     or.addBodyLine("}");
                     or.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
                     or.addBodyLine("return (Criteria) this;");
@@ -258,23 +251,11 @@ public class ExampleExtendPlugin extends PluginAdapter {
         innerClass.setStatic(true);
         innerClass.setVisibility(JavaVisibility.PUBLIC);
 
-        Field name = new Field();
-        name.setName("name");
-        name.setType(new FullyQualifiedJavaType("String"));
-        name.setVisibility(JavaVisibility.PRIVATE);
-        innerClass.addField(name);
-
-        Field value = new Field();
-        value.setName("value");
-        value.setType(new FullyQualifiedJavaType("Object"));
-        value.setVisibility(JavaVisibility.PRIVATE);
-        innerClass.addField(value);
-
-        Field operation = new Field();
-        operation.setName("operation");
-        operation.setType(new FullyQualifiedJavaType("String"));
-        operation.setVisibility(JavaVisibility.PRIVATE);
-        innerClass.addField(operation);
+        Field sql = new Field();
+        sql.setName("sql");
+        sql.setType(new FullyQualifiedJavaType("String"));
+        sql.setVisibility(JavaVisibility.PRIVATE);
+        innerClass.addField(sql);
 
         innerClass.addAnnotation("@Data");
 
@@ -286,7 +267,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
         eq.setName("eq");
         eq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         eq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
-        eq.addBodyLine("return init(column, value, \"=\");");
+        eq.addBodyLine("String sql = column.getEscapedColumnName() + \" ='\" + value + \"'\";");
+        eq.addBodyLine("return init(sql);");
         innerClass.addMethod(eq);
 
 
@@ -297,7 +279,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
         notEq.setName("notEq");
         notEq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         notEq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
-        notEq.addBodyLine("return init(column, value, \"<>\");");
+        notEq.addBodyLine("String sql = column.getEscapedColumnName() + \" <>'\" + value + \"'\";");
+        notEq.addBodyLine("return init(sql);");
         innerClass.addMethod(notEq);
 
 
@@ -311,7 +294,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
         notIn.addBodyLine("if (value instanceof Collection) {");
         notIn.addBodyLine("value = \"(\" + StringUtils.join((Collection) value, \",\") + \")\";");
         notIn.addBodyLine("}");
-        notIn.addBodyLine("return init(column, value, \"not in\");");
+        notIn.addBodyLine("String sql = column.getEscapedColumnName() + \" not in \" + value + \"\";");
+        notIn.addBodyLine(" return init(sql);");
         innerClass.addMethod(notIn);
 
 
@@ -325,22 +309,37 @@ public class ExampleExtendPlugin extends PluginAdapter {
         in.addBodyLine("if (value instanceof Collection) {");
         in.addBodyLine("value = \"(\" + StringUtils.join((Collection) value, \",\") + \")\";");
         in.addBodyLine("}");
-        in.addBodyLine("return init(column, value, \"in\");");
+        in.addBodyLine("String sql = column.getEscapedColumnName() + \"in \" + value + \"\";");
+        in.addBodyLine("return init(sql);");
         innerClass.addMethod(in);
 
+
+        Method find = new Method();
+        find.setReturnType(new FullyQualifiedJavaType("Condition"));
+        find.setVisibility(JavaVisibility.PUBLIC);
+        find.setStatic(true);
+        find.setName("find");
+        find.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        find.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+        find.addBodyLine("if (value instanceof Collection) {");
+        find.addBodyLine("Collection list = (Collection) value;");
+        find.addBodyLine("List<String> sqls = new ArrayList<>();");
+        find.addBodyLine("for (Object o : list) {");
+        find.addBodyLine("sqls.add(\"FIND_IN_SET('\" + o + \"', \" + column.getEscapedColumnName() + \")\");");
+        find.addBodyLine("}");
+        find.addBodyLine("return init(StringUtils.join(sqls, \" or \"));");
+        find.addBodyLine("}");
+        find.addBodyLine("return init(\"FIND_IN_SET('\" + value + \"', \" + column.getEscapedColumnName() + \")\");");
+        innerClass.addMethod(find);
 
         Method init = new Method();
         init.setReturnType(new FullyQualifiedJavaType("Condition"));
         init.setVisibility(JavaVisibility.PRIVATE);
         init.setStatic(true);
         init.setName("init");
-        init.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
-        init.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
-        init.addParameter(new Parameter(new FullyQualifiedJavaType("String"), "operation"));
+        init.addParameter(new Parameter(new FullyQualifiedJavaType("String"), "sql"));
         init.addBodyLine("Condition condition = new Condition();");
-        init.addBodyLine("condition.setName(column.getEscapedColumnName());");
-        init.addBodyLine("condition.setValue(value);");
-        init.addBodyLine("condition.setOperation(operation);");
+        init.addBodyLine("condition.setSql(sql);");
         init.addBodyLine("return condition;");
         innerClass.addMethod(init);
 
