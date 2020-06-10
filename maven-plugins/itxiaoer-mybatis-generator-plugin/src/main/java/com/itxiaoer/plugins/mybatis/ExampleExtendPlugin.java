@@ -225,7 +225,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     Method orLeftLike = new Method();
                     orLeftLike.setReturnType(new FullyQualifiedJavaType("Criteria"));
                     orLeftLike.setVisibility(JavaVisibility.PUBLIC);
-                    orLeftLike.setName("orRightLike");
+                    orLeftLike.setName("orLeftLike");
                     orLeftLike.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
                     orLeftLike.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
                     orLeftLike.addBodyLine("if (Objects.isNull(value) || StringUtils.isBlank(value.toString()) || Objects.isNull(columns)) {");
