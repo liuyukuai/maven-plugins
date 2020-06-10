@@ -309,6 +309,27 @@ public class ExampleExtendPlugin extends PluginAdapter {
         eq.addBodyLine("return init(sql);");
         innerClass.addMethod(eq);
 
+        Method isNull = new Method();
+        isNull.setReturnType(new FullyQualifiedJavaType("Condition"));
+        isNull.setVisibility(JavaVisibility.PUBLIC);
+        isNull.setStatic(true);
+        isNull.setName("isNull");
+        isNull.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        isNull.addBodyLine("String sql = column.getEscapedColumnName() + \" is null \";");
+        isNull.addBodyLine("return init(sql);");
+        innerClass.addMethod(isNull);
+
+
+        Method isNotNull = new Method();
+        isNotNull.setReturnType(new FullyQualifiedJavaType("Condition"));
+        isNotNull.setVisibility(JavaVisibility.PUBLIC);
+        isNotNull.setStatic(true);
+        isNotNull.setName("isNotNull");
+        isNotNull.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
+        isNotNull.addBodyLine("String sql = column.getEscapedColumnName() + \" is not null \";");
+        isNotNull.addBodyLine("return init(sql);");
+        innerClass.addMethod(isNotNull);
+
 
         Method notEq = new Method();
         notEq.setReturnType(new FullyQualifiedJavaType("Condition"));
