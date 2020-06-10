@@ -203,6 +203,44 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orLike.addBodyLine("return (Criteria) this;");
                     e.addMethod(orLike);
 
+                    // 设置方法
+                    Method orRightLike = new Method();
+                    orRightLike.setReturnType(new FullyQualifiedJavaType("Criteria"));
+                    orRightLike.setVisibility(JavaVisibility.PUBLIC);
+                    orRightLike.setName("orRightLike");
+                    orRightLike.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+                    orRightLike.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
+                    orRightLike.addBodyLine("if (Objects.isNull(value) || StringUtils.isBlank(value.toString()) || Objects.isNull(columns)) {");
+                    orRightLike.addBodyLine(" return (Criteria) this;");
+                    orRightLike.addBodyLine("}");
+                    orRightLike.addBodyLine("List<String> sql = new ArrayList<>();");
+                    orRightLike.addBodyLine("for (Column column : columns) {");
+                    orRightLike.addBodyLine(" sql.add(column.getEscapedColumnName() + \" like '\" + StringEscapeUtils.escapeXSI(value.toString()) + \"%'\");");
+                    orRightLike.addBodyLine("}");
+                    orRightLike.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
+                    orRightLike.addBodyLine("return (Criteria) this;");
+                    e.addMethod(orRightLike);
+
+                    // 设置方法
+                    Method orLeftLike = new Method();
+                    orLeftLike.setReturnType(new FullyQualifiedJavaType("Criteria"));
+                    orLeftLike.setVisibility(JavaVisibility.PUBLIC);
+                    orLeftLike.setName("orRightLike");
+                    orLeftLike.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
+                    orLeftLike.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column..."), "columns"));
+                    orLeftLike.addBodyLine("if (Objects.isNull(value) || StringUtils.isBlank(value.toString()) || Objects.isNull(columns)) {");
+                    orLeftLike.addBodyLine(" return (Criteria) this;");
+                    orLeftLike.addBodyLine("}");
+                    orLeftLike.addBodyLine("List<String> sql = new ArrayList<>();");
+                    orLeftLike.addBodyLine("for (Column column : columns) {");
+                    orLeftLike.addBodyLine(" sql.add(column.getEscapedColumnName() + \" like '%\" + StringEscapeUtils.escapeXSI(value.toString()) + \"'\");");
+                    orLeftLike.addBodyLine("}");
+                    orLeftLike.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
+                    orLeftLike.addBodyLine("return (Criteria) this;");
+                    e.addMethod(orLeftLike);
+
+
+
 
                     // 设置方法
                     Method orEq = new Method();
@@ -309,7 +347,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         in.addBodyLine("if (value instanceof Collection) {");
         in.addBodyLine("value = \"(\" + StringUtils.join((Collection) value, \",\") + \")\";");
         in.addBodyLine("}");
-        in.addBodyLine("String sql = column.getEscapedColumnName() + \"in \" + value + \"\";");
+        in.addBodyLine("String sql = column.getEscapedColumnName() + \" in \" + value + \"\";");
         in.addBodyLine("return init(sql);");
         innerClass.addMethod(in);
 
