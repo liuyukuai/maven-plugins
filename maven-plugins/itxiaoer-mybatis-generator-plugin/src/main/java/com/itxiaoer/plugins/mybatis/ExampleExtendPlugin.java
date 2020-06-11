@@ -126,6 +126,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
         topLevelClass.addImportedType("org.apache.commons.text.StringEscapeUtils");
         topLevelClass.addImportedType("org.apache.commons.lang3.StringUtils");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.util.Strings");
         topLevelClass.addImportedType("lombok.Data");
 
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
@@ -351,7 +352,9 @@ public class ExampleExtendPlugin extends PluginAdapter {
         notIn.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         notIn.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
         notIn.addBodyLine("if (value instanceof Collection) {");
-        notIn.addBodyLine("value = \"(\" + StringUtils.join((Collection) value, \",\") + \")\";");
+        notIn.addBodyLine("value = \"(\" + Strings.sql((Collection) value) + \")\";");
+        notIn.addBodyLine("} else {");
+        notIn.addBodyLine("value = \"(\" + Strings.sql(value) + \")\";");
         notIn.addBodyLine("}");
         notIn.addBodyLine("String sql = column.getEscapedColumnName() + \" not in \" + value + \"\";");
         notIn.addBodyLine(" return init(sql);");
@@ -366,7 +369,9 @@ public class ExampleExtendPlugin extends PluginAdapter {
         in.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         in.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
         in.addBodyLine("if (value instanceof Collection) {");
-        in.addBodyLine("value = \"(\" + StringUtils.join((Collection) value, \",\") + \")\";");
+        in.addBodyLine("value = \"(\" + Strings.sql((Collection) value) + \")\";");
+        in.addBodyLine("} else {");
+        in.addBodyLine("value = \"(\" + Strings.sql(value) + \")\";");
         in.addBodyLine("}");
         in.addBodyLine("String sql = column.getEscapedColumnName() + \" in \" + value + \"\";");
         in.addBodyLine("return init(sql);");
