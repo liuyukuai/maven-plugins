@@ -109,8 +109,21 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
-        if (names.contains("orgCode")) {
+        if (names.contains("department")) {
+            // 添加orgCodes方法
+            method = new Method();
+            method.addAnnotation("@Override");
+            method.setReturnType(topLevelClass.getType());
+            method.setName("departments");
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "departments"));
+            method.addBodyLine(" this.getOredCriteria().forEach(e -> e.andDepartmentIn(departments));");
+            method.addBodyLine("return this;");
+            topLevelClass.addMethod(method);
+        }
 
+
+        if (names.contains("orgCode")) {
             // 添加orgCodes方法
             method = new Method();
             method.addAnnotation("@Override");
@@ -118,15 +131,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             method.setName("orgCodes");
             method.setVisibility(JavaVisibility.PUBLIC);
             method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "orgCodes"));
-            method.addBodyLine("if (this.oredCriteria.size() == 0) {");
-            method.addBodyLine("Criteria criteria = this.createCriteriaInternal();");
-            method.addBodyLine("criteria.andOrgCodeIn(orgCodes);");
-            method.addBodyLine("this.oredCriteria.add(criteria);");
-            method.addBodyLine("} else {");
-            method.addBodyLine("for (Criteria oredCriterion : oredCriteria) {");
-            method.addBodyLine("oredCriterion.andOrgCodeIn(orgCodes);");
-            method.addBodyLine("}");
-            method.addBodyLine("}");
+            method.addBodyLine("this.getOredCriteria().forEach(e -> e.andOrgCodeIn(orgCodes));");
             method.addBodyLine("return this;");
             topLevelClass.addMethod(method);
         }
@@ -254,8 +259,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     orLeftLike.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
                     orLeftLike.addBodyLine("return (Criteria) this;");
                     e.addMethod(orLeftLike);
-
-
 
 
                     // 设置方法
