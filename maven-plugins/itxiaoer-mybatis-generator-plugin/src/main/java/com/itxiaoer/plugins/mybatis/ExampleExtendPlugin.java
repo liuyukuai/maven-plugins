@@ -117,7 +117,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             method.setName("departments");
             method.setVisibility(JavaVisibility.PUBLIC);
             method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "departments"));
-            method.addBodyLine(" this.getOredCriteria().forEach(e -> e.andDepartmentIn(departments));");
+            method.addBodyLine("this.getOredCriteria().forEach(e -> e.andDepartmentIn(departments));");
             method.addBodyLine("return this;");
             topLevelClass.addMethod(method);
         }
