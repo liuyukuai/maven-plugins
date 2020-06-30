@@ -94,6 +94,21 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
+        if (names.contains("tenantId")) {
+            method = new Method();
+            method.addAnnotation("@Override");
+            method.setReturnType(topLevelClass.getType());
+            method.setName("tenantId");
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "id"));
+            method.addBodyLine("if (Objects.nonNull(id)) {");
+            method.addBodyLine("Long tenantId = Long.valueOf(id.toString());");
+            method.addBodyLine("this.getOredCriteria().forEach(e -> e.andTenantIdEqualTo(tenantId));");
+            method.addBodyLine("}");
+            method.addBodyLine("return this;");
+            topLevelClass.addMethod(method);
+        }
+
         if (names.contains("orgCode")) {
 
             // 添加orgCodes方法
