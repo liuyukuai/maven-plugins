@@ -136,6 +136,53 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
+        if (names.contains("department") && names.contains("orgCode")) {
+            // 添加orgCodes方法
+            method = new Method();
+            method.addAnnotation("@Override");
+            method.setReturnType(topLevelClass.getType());
+            method.setName("privileges");
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "orgCodes"));
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "departments"));
+            method.addBodyLine("List<Condition> conditions = new ArrayList<>(2);");
+            method.addBodyLine("if (Lists.iterable(orgCodes)) {");
+            method.addBodyLine("Condition in = Condition.in(Column.orgCode, orgCodes);");
+            method.addBodyLine("conditions.add(in);");
+            method.addBodyLine("}");
+            method.addBodyLine("if (Lists.iterable(departments)) {");
+            method.addBodyLine("Condition in = Condition.in(Column.department, orgCodes);");
+            method.addBodyLine("conditions.add(in);");
+            method.addBodyLine("}");
+            method.addBodyLine("this.getOredCriteria().forEach(e -> {");
+            method.addBodyLine("e.or(conditions.toArray(new Condition[]{}));");
+            method.addBodyLine("});");
+            method.addBodyLine("return this;");
+            topLevelClass.addMethod(method);
+        }
+
+        if (!names.contains("department") && names.contains("orgCode")) {
+            // 添加orgCodes方法
+            method = new Method();
+            method.addAnnotation("@Override");
+            method.setReturnType(topLevelClass.getType());
+            method.setName("privileges");
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "orgCodes"));
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "departments"));
+            method.addBodyLine("List<Condition> conditions = new ArrayList<>(2);");
+            method.addBodyLine("if (Lists.iterable(orgCodes)) {");
+            method.addBodyLine("Condition in = Condition.in(Column.orgCode, orgCodes);");
+            method.addBodyLine("conditions.add(in);");
+            method.addBodyLine("}");
+            method.addBodyLine("this.getOredCriteria().forEach(e -> {");
+            method.addBodyLine("e.or(conditions.toArray(new Condition[]{}));");
+            method.addBodyLine("});");
+            method.addBodyLine("return this;");
+            topLevelClass.addMethod(method);
+        }
+
+
         //添加分页方法
         topLevelClass.addImportedType("java.util.*");
         topLevelClass.addImportedType("java.util.stream.Collectors");
