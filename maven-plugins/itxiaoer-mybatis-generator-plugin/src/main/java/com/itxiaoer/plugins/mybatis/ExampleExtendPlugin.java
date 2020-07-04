@@ -151,7 +151,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             method.addBodyLine("conditions.add(in);");
             method.addBodyLine("}");
             method.addBodyLine("if (Lists.iterable(departments)) {");
-            method.addBodyLine("Condition in = Condition.in(Column.department, orgCodes);");
+            method.addBodyLine("Condition in = Condition.in(Column.department, departments);");
             method.addBodyLine("conditions.add(in);");
             method.addBodyLine("}");
             method.addBodyLine("this.getOredCriteria().forEach(e -> {");
