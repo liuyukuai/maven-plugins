@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  *
  * @author : liuyk
  */
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class ExampleExtendPlugin extends PluginAdapter {
 
     @Override
@@ -342,6 +342,23 @@ public class ExampleExtendPlugin extends PluginAdapter {
                     or.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" or \") + \")\");");
                     or.addBodyLine("return (Criteria) this;");
                     e.addMethod(or);
+
+                    // 设置方法
+                    Method and = new Method();
+                    and.setReturnType(new FullyQualifiedJavaType("Criteria"));
+                    and.setVisibility(JavaVisibility.PUBLIC);
+                    and.setName("and");
+                    and.addParameter(new Parameter(new FullyQualifiedJavaType("Condition..."), "conditions"));
+                    and.addBodyLine("if (Objects.isNull(conditions) || conditions.length == 0) {");
+                    and.addBodyLine("return (Criteria) this;");
+                    and.addBodyLine("}");
+                    and.addBodyLine("List<String> sql = new ArrayList<>();");
+                    and.addBodyLine("for (Condition condition : conditions) {");
+                    and.addBodyLine("sql.add(condition.getSql());");
+                    and.addBodyLine("}");
+                    and.addBodyLine("addCriterion(\"(\" + StringUtils.join(sql, \" and \") + \")\");");
+                    and.addBodyLine("return (Criteria) this;");
+                    e.addMethod(and);
                 });
 
         topLevelClass.addMethod(page);
