@@ -117,7 +117,13 @@ public class ExampleExtendPlugin extends PluginAdapter {
             method.setName("departments");
             method.setVisibility(JavaVisibility.PUBLIC);
             method.addParameter(new Parameter(new FullyQualifiedJavaType("List<String>"), "departments"));
-            method.addBodyLine("this.getOredCriteria().forEach(e -> e.andDepartmentIn(departments));");
+            method.addBodyLine("this.getOredCriteria().forEach(e -> {");
+            method.addBodyLine("if (Lists.iterable(departments)) {");
+            method.addBodyLine("Condition in = Condition.in(Column.department, departments);");
+            method.addBodyLine("Condition isNull = Condition.isNull(Column.department);");
+            method.addBodyLine("e.or(in, isNull);");
+            method.addBodyLine("}");
+            method.addBodyLine("});");
             method.addBodyLine("return this;");
             topLevelClass.addMethod(method);
         }
