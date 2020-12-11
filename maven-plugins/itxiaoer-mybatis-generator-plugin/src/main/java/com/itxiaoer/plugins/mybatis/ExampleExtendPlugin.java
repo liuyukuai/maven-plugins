@@ -251,6 +251,20 @@ public class ExampleExtendPlugin extends PluginAdapter {
         page.addBodyLine("}");
         page.addBodyLine("return this;");
 
+
+        Method sort = new Method();
+        sort.addAnnotation("@Override");
+        sort.setReturnType(topLevelClass.getType());
+        sort.setName("sort");
+        sort.setVisibility(JavaVisibility.PUBLIC);
+        sort.addParameter(new Parameter(new FullyQualifiedJavaType("Sort"), "...sorts"));
+        sort.addBodyLine("if (Lists.iterable(sorts)) {");
+        sort.addBodyLine("String orders = sorts.stream().map(e -> this.getColumn(e.getName()) + \" \" + e.getDirection()).collect(Collectors.joining(\",\"));");
+        sort.addBodyLine(" this.setOrderByClause(orders);");
+        sort.addBodyLine("}");
+        sort.addBodyLine("return this;");
+        topLevelClass.addMethod(sort);
+
         topLevelClass.addInnerClass(createCondition(domainObjectName));
 
 
