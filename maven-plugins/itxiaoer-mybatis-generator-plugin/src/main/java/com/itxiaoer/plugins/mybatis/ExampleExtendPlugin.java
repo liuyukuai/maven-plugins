@@ -408,7 +408,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         eq.setName("eq");
         eq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         eq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
-        eq.addBodyLine("String sql = column.getEscapedColumnName() + \" ='\" + value + \"'\";");
+        eq.addBodyLine("String sql = column.getEscapedColumnName() + \" =\" + Strings.sql(value) + \"\";");
         eq.addBodyLine("return init(sql);");
         innerClass.addMethod(eq);
 
@@ -441,7 +441,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         notEq.setName("notEq");
         notEq.addParameter(new Parameter(new FullyQualifiedJavaType(domainObjectName + ".Column"), "column"));
         notEq.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "value"));
-        notEq.addBodyLine("String sql = column.getEscapedColumnName() + \" <>'\" + value + \"'\";");
+        notEq.addBodyLine("String sql = column.getEscapedColumnName() + \" <>\" + Strings.sql(value) + \"\";");
         notEq.addBodyLine("return init(sql);");
         innerClass.addMethod(notEq);
 
@@ -491,11 +491,11 @@ public class ExampleExtendPlugin extends PluginAdapter {
         find.addBodyLine("Collection list = (Collection) value;");
         find.addBodyLine("List<String> sqls = new ArrayList<>();");
         find.addBodyLine("for (Object o : list) {");
-        find.addBodyLine("sqls.add(\"FIND_IN_SET('\" + o + \"', \" + column.getEscapedColumnName() + \")\");");
+        find.addBodyLine("sqls.add(\"FIND_IN_SET(\" + Strings.sql(value) + \", \" + column.getEscapedColumnName() + \")\");");
         find.addBodyLine("}");
         find.addBodyLine("return init(StringUtils.join(sqls, \" or \"));");
         find.addBodyLine("}");
-        find.addBodyLine("return init(\"FIND_IN_SET('\" + value + \"', \" + column.getEscapedColumnName() + \")\");");
+        find.addBodyLine("return init(\"FIND_IN_SET(\" + Strings.sql(value) + \", \" + column.getEscapedColumnName() + \")\");");
         innerClass.addMethod(find);
 
         Method init = new Method();
