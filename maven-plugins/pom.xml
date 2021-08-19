@@ -51,14 +51,42 @@
         <tag>v1.0.0</tag>
     </scm>
 
+    <repositories>
+        <repository>
+            <id>TsingYun-java-Group</id>
+            <url>http://repo.tsingyun.net/repository/tsingyun-java-group/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>TsingYun-java-Group</id>
+            <url>http://repo.tsingyun.net/repository/tsingyun-java-group/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+
     <distributionManagement>
         <snapshotRepository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <id>TsingYun-java-Snapshot</id>
+            <url>http://repo.tsingyun.net/repository/tsingyun-java-snapshot/</url>
         </snapshotRepository>
         <repository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>TsingYun-java-Release</id>
+            <url>http://repo.tsingyun.net/repository/tsingyun-java-release/</url>
         </repository>
     </distributionManagement>
 
@@ -69,7 +97,7 @@
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.6.7</version>
                 <extensions>true</extensions>
-                <configuration>                                                   
+                <configuration>
                     <serverId>oss</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
@@ -105,25 +133,25 @@
                 </executions>
 
                 <configuration>
-                    <javadocExecutable>/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/bin/javadoc</javadocExecutable>
+                    <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
                 </configuration>
             </plugin>
 
-            <!-- GPG -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--&lt;!&ndash; GPG &ndash;&gt;-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-gpg-plugin</artifactId>-->
+                <!--<version>1.5</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>sign-artifacts</id>-->
+                        <!--<phase>verify</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>sign</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
