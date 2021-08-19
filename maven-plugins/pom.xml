@@ -42,10 +42,10 @@
     </developers>
     <scm>
         <connection>
-            scm:git:https://github.com/liuyukuai/maven-plugins.git
+            scm:git:git@github.com:liuyukuai/maven-plugins.git
         </connection>
         <developerConnection>
-            scm:git:https://github.com/liuyukuai/maven-plugins.git
+            scm:git:git@github.com:liuyukuai/maven-plugins.git
         </developerConnection>
         <url>https://github.com/liuyukuai/maven-plugins</url>
         <tag>v1.0.0</tag>
