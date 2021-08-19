@@ -191,6 +191,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
 
         //添加分页方法
         topLevelClass.addImportedType("java.util.*");
+        topLevelClass.addImportedType("java.util.stream.Stream");
         topLevelClass.addImportedType("java.util.stream.Collectors");
         topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
         topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
