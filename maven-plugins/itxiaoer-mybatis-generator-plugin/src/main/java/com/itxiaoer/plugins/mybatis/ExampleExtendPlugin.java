@@ -492,7 +492,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         find.addBodyLine("Collection list = (Collection) value;");
         find.addBodyLine("List<String> sqls = new ArrayList<>();");
         find.addBodyLine("for (Object o : list) {");
-        find.addBodyLine("sqls.add(\"FIND_IN_SET(\" + Strings.sql(value) + \", \" + column.getEscapedColumnName() + \")\");");
+        find.addBodyLine("sqls.add(\"FIND_IN_SET(\" + Strings.sql(o) + \", \" + column.getEscapedColumnName() + \")\");");
         find.addBodyLine("}");
         find.addBodyLine("return init(StringUtils.join(sqls, \" or \"));");
         find.addBodyLine("}");
