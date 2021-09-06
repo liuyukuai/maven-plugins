@@ -1,5 +1,6 @@
 package com.itxiaoer.plugins.mybatis;
 
+import com.itxiaoer.plugins.mybatis.util.Domains;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.IntrospectedColumn;
@@ -27,6 +28,8 @@ public class DomainExtendPlugin extends PluginAdapter {
     @Override
     public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         topLevelClass.addAnnotation("@SuppressWarnings(\"unused\")");
+
+        Domains.doInnerEnums(topLevelClass);
 
         List<Method> methods = topLevelClass.getMethods();
         for (Method method : methods) {
@@ -67,14 +70,7 @@ public class DomainExtendPlugin extends PluginAdapter {
             boolean nullable = introspectedColumn.isNullable();
             int length = introspectedColumn.getLength();
             int scale = introspectedColumn.getScale();
-
-
-            topLevelClass.addImportedType("javax.validation.constraints.Size");
-            topLevelClass.addImportedType("javax.validation.constraints.NotBlank");
-            topLevelClass.addImportedType("javax.validation.constraints.Digits");
-            topLevelClass.addImportedType("javax.validation.constraints.NotEmpty");
-            topLevelClass.addImportedType("net.tsingyun.commons.core.Constants");
-            topLevelClass.addImportedType("com.fasterxml.jackson.annotation.JsonFormat");
+            Domains.doImprots(topLevelClass);
 
             if (!Objects.equals("id", javaProperty)) {
                 // 不能为空

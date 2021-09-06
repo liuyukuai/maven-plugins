@@ -15,9 +15,11 @@ public interface Coder {
     /**
      * 生成对应的类型
      *
-     * @param properties
-     * @param entityPackage
-     * @param introspectedTable
+     * @param properties        properties
+     * @param entityPackage     entityPackage
+     * @param introspectedTable introspectedTable
+     * @param context           context
+     * @return javaFile
      */
     GeneratedJavaFile generator(Context context, IntrospectedTable introspectedTable, Properties properties, String entityPackage);
 
@@ -25,7 +27,7 @@ public interface Coder {
      * 首字母小写
      *
      * @param s 字符串
-     * @return
+     * @return string
      */
     default String toLowerCaseFirstOne(String s) {
         if (Character.isLowerCase(s.charAt(0))) {
