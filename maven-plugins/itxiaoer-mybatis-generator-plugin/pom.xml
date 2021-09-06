@@ -20,13 +20,6 @@
         <dependency>
             <groupId>com.itxiaoer.commons</groupId>
             <artifactId>commons-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter</artifactId>
-                </exclusion>
-            </exclusions>
-            <version>2.2.4</version>
         </dependency>
     </dependencies>
 </project>
