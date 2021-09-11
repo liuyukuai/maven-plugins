@@ -10,18 +10,28 @@
     </modules>
     <packaging>pom</packaging>
 
-    <parent>
-        <groupId>com.itxiaoer.commons</groupId>
-        <artifactId>commons</artifactId>
-        <version>2.3.4</version>
-    </parent>
+    <!--<parent>-->
+        <!--<groupId>com.itxiaoer.commons</groupId>-->
+        <!--<artifactId>commons</artifactId>-->
+        <!--<version>2.3.6</version>-->
+    <!--</parent>-->
 
     <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <!-- 日志 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>1.7.32</version>
         </dependency>
 
     </dependencies>
@@ -53,14 +63,15 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <id>TsingYun-java-Snapshot</id>
+            <url>http://repo.tsingyun.net/repository/tsingyun-java-snapshot/</url>
         </snapshotRepository>
         <repository>
-            <id>oss</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>TsingYun-java-Release</id>
+            <url>http://repo.tsingyun.net/repository/tsingyun-java-release/</url>
         </repository>
     </distributionManagement>
+
 
     <build>
         <plugins>
@@ -97,21 +108,21 @@
                 </configuration>
             </plugin>
 
-            <!-- GPG -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--&lt;!&ndash; GPG &ndash;&gt;-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-gpg-plugin</artifactId>-->
+                <!--<version>1.5</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>sign-artifacts</id>-->
+                        <!--<phase>verify</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>sign</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

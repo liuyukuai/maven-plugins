@@ -6,6 +6,7 @@ package com.itxiaoer.plugins.mybatis.util;
 import com.itxiaoer.commons.core.util.Lists;
 import org.mybatis.generator.api.dom.java.*;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -59,17 +60,17 @@ public class Examples {
         conditionals.addParameter(new Parameter(new FullyQualifiedJavaType("Conditionals"), "conditionals"));
         conditionals.addBodyLine("List<Condition> init = this.init(conditionals);");
         conditionals.addBodyLine("if (Lists.iterable(init)) {");
-        conditionals.addBodyLine(" Condition[] conditions = init.toArray(new Condition[]{});");
-        conditionals.addBodyLine(" Operator operator = conditionals.getOperator();");
-        conditionals.addBodyLine("  switch (operator) {");
-        conditionals.addBodyLine("     case AND:");
-        conditionals.addBodyLine("   this.getOredCriteria().forEach(e -> e.and(conditions));");
-        conditionals.addBodyLine("    return this;");
-        conditionals.addBodyLine("   case OR:");
-        conditionals.addBodyLine("    this.getOredCriteria().forEach(e -> e.or(conditions));");
-        conditionals.addBodyLine("    return this;");
-        conditionals.addBodyLine("     default:");
-        conditionals.addBodyLine("    return this;");
+        conditionals.addBodyLine("Condition[] conditions = init.toArray(new Condition[]{});");
+        conditionals.addBodyLine("Operator operator = conditionals.getOperator();");
+        conditionals.addBodyLine("switch (operator) {");
+        conditionals.addBodyLine("case AND:");
+        conditionals.addBodyLine("this.getOredCriteria().forEach(e -> e.and(conditions));");
+        conditionals.addBodyLine("return this;");
+        conditionals.addBodyLine("case OR:");
+        conditionals.addBodyLine("this.getOredCriteria().forEach(e -> e.or(conditions));");
+        conditionals.addBodyLine("return this;");
+        conditionals.addBodyLine("default:");
+        conditionals.addBodyLine("return this;");
         conditionals.addBodyLine("}");
         conditionals.addBodyLine("}");
         conditionals.addBodyLine("return this;");
@@ -81,7 +82,7 @@ public class Examples {
         condition.addAnnotation("@Override");
         condition.setName("condition");
         condition.addParameter(new Parameter(new FullyQualifiedJavaType("Condition"), "condition"));
-        condition.addBodyLine("if (Objects.noneNull(condition)) {");
+        condition.addBodyLine("if (Objects.nonNull(condition)) {");
         condition.addBodyLine("   this.getOredCriteria().forEach(e -> e.and(condition));");
         condition.addBodyLine("}");
         topLevelClass.addMethod(condition);
@@ -92,8 +93,8 @@ public class Examples {
         conditions.setName("condition");
         conditions.addAnnotation("@Override");
         conditions.addParameter(new Parameter(new FullyQualifiedJavaType("List<Condition>"), "conditions"));
-        conditions.addBodyLine("if (Lists.iterable((conditions)) {");
-        conditions.addBodyLine("   this.getOredCriteria().forEach(e -> e.and(conditions));");
+        conditions.addBodyLine("if (Lists.iterable(conditions)) {");
+        conditions.addBodyLine("this.getOredCriteria().forEach(e -> e.and(conditions.toArray(new Condition[]{});));");
         conditions.addBodyLine("}");
         topLevelClass.addMethod(conditions);
 
