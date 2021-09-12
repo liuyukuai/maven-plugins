@@ -88,16 +88,35 @@ public class Examples {
         topLevelClass.addMethod(condition);
 
         Method conditions = new Method();
-        conditions.setVisibility(JavaVisibility.PUBLIC);
         conditions.setReturnType(topLevelClass.getType());
+        conditions.setVisibility(JavaVisibility.PUBLIC);
         conditions.setName("condition");
         conditions.addAnnotation("@Override");
         conditions.addParameter(new Parameter(new FullyQualifiedJavaType("List<Condition>"), "conditions"));
-        conditions.addBodyLine("if (Lists.iterable(conditions)) {");
-        conditions.addBodyLine("this.getOredCriteria().forEach(e -> e.and(conditions.toArray(new Condition[]{})));");
-        conditions.addBodyLine("}");
-        conditions.addBodyLine("return this;");
+        conditions.addBodyLine("return this.condition(conditions,Operator.AND);");
         topLevelClass.addMethod(conditions);
+
+        Method conditionsOperator = new Method();
+        conditionsOperator.setVisibility(JavaVisibility.PUBLIC);
+        conditionsOperator.setName("condition");
+        conditionsOperator.setReturnType(topLevelClass.getType());
+        conditionsOperator.addAnnotation("@Override");
+        conditionsOperator.addParameter(new Parameter(new FullyQualifiedJavaType("List<Condition>"), "conditions"));
+        conditionsOperator.addParameter(new Parameter(new FullyQualifiedJavaType("Operator"), "operator"));
+        conditionsOperator.addBodyLine("if (Lists.iterable(conditions)) {");
+        conditionsOperator.addBodyLine("switch (operator) {");
+        conditionsOperator.addBodyLine("case AND:");
+        conditionsOperator.addBodyLine("this.getOredCriteria().forEach(e -> e.and(conditions.toArray(new Condition[]{})));");
+        conditionsOperator.addBodyLine("return this;");
+        conditionsOperator.addBodyLine("case OR:");
+        conditionsOperator.addBodyLine("this.getOredCriteria().forEach(e -> e.or(conditions.toArray(new Condition[]{})));");
+        conditionsOperator.addBodyLine("return this;");
+        conditionsOperator.addBodyLine("default:");
+        conditionsOperator.addBodyLine("return this;");
+        conditionsOperator.addBodyLine("}");
+        conditionsOperator.addBodyLine("}");
+        conditionsOperator.addBodyLine("return this;");
+        topLevelClass.addMethod(conditionsOperator);
 
     }
 
