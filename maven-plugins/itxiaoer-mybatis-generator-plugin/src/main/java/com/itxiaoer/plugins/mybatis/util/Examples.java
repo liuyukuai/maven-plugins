@@ -84,6 +84,7 @@ public class Examples {
         condition.addBodyLine("if (Objects.nonNull(condition)) {");
         condition.addBodyLine("   this.getOredCriteria().forEach(e -> e.and(condition));");
         condition.addBodyLine("}");
+        condition.addBodyLine("return this;");
         topLevelClass.addMethod(condition);
 
         Method conditions = new Method();
@@ -93,8 +94,9 @@ public class Examples {
         conditions.addAnnotation("@Override");
         conditions.addParameter(new Parameter(new FullyQualifiedJavaType("List<Condition>"), "conditions"));
         conditions.addBodyLine("if (Lists.iterable(conditions)) {");
-        conditions.addBodyLine("this.getOredCriteria().forEach(e -> e.and(conditions.toArray(new Condition[]{});));");
+        conditions.addBodyLine("this.getOredCriteria().forEach(e -> e.and(conditions.toArray(new Condition[]{})));");
         conditions.addBodyLine("}");
+        conditions.addBodyLine("return this;");
         topLevelClass.addMethod(conditions);
 
     }
