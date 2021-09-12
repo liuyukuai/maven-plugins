@@ -6,7 +6,6 @@ package com.itxiaoer.plugins.mybatis.util;
 import com.itxiaoer.commons.core.util.Lists;
 import org.mybatis.generator.api.dom.java.*;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
