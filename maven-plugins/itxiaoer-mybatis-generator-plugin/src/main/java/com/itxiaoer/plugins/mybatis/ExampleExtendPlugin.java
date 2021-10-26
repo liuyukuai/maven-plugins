@@ -101,18 +101,27 @@ public class ExampleExtendPlugin extends PluginAdapter {
         }
 
         if (names.contains("tenantId")) {
-            method = new Method();
-            method.addAnnotation("@Override");
-            method.setReturnType(topLevelClass.getType());
-            method.setName("tenantId");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "id"));
-            method.addBodyLine("if (Objects.nonNull(id)) {");
-            method.addBodyLine("Long tenantId = Long.valueOf(id.toString());");
-            method.addBodyLine("this.getOredCriteria().forEach(e -> e.andTenantIdEqualTo(tenantId));");
-            method.addBodyLine("}");
-            method.addBodyLine("return this;");
-            topLevelClass.addMethod(method);
+            IntrospectedColumn field = Lists.empty(introspectedTable.getAllColumns())
+                    .stream()
+                    .filter(e -> Objects.equals(e.getJavaProperty(), "tenantId"))
+                    .findAny()
+                    .orElse(null);
+
+            String className = field.getFullyQualifiedJavaType().getShortName();
+
+            if (Objects.nonNull(field)) {
+                method = new Method();
+                method.addAnnotation("@Override");
+                method.setReturnType(topLevelClass.getType());
+                method.setName("tenantId");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(new Parameter(new FullyQualifiedJavaType("Object"), "tenantId"));
+                method.addBodyLine("if (Objects.nonNull(tenantId)) {");
+                method.addBodyLine("this.getOredCriteria().forEach(e -> e.andTenantIdEqualTo((" + className + ")tenantId));");
+                method.addBodyLine("}");
+                method.addBodyLine("return this;");
+                topLevelClass.addMethod(method);
+            }
         }
 
         if (names.contains("department")) {
