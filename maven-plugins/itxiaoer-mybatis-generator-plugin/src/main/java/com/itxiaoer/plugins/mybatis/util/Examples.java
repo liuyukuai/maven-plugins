@@ -17,7 +17,6 @@ public class Examples {
 
     public static void doImprots(TopLevelClass topLevelClass) {
         //添加分页方法
-        topLevelClass.addImportedType("lombok.Data");
         topLevelClass.addImportedType("java.util.*");
         topLevelClass.addImportedType("java.util.stream.Stream");
         topLevelClass.addImportedType("java.util.stream.Collectors");
@@ -26,9 +25,8 @@ public class Examples {
         topLevelClass.addImportedType("net.tsingyun.commons.core.page.Paging");
         topLevelClass.addImportedType("net.tsingyun.commons.core.page.Sort");
         topLevelClass.addImportedType("net.tsingyun.commons.core.util.Lists");
-        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.util.PagingUtils");
-        topLevelClass.addImportedType("net.tsingyun.commons.mybatis.PageRequest");
-        topLevelClass.addImportedType("net.tsingyun.commons.core.util.Strings");
+        topLevelClass.addImportedType("net.tsingyun.commons.orm.PagingUtils");
+        topLevelClass.addImportedType("net.tsingyun.commons.orm.PageRequest");
 
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.Condition");
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.Criterion");
