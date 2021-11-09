@@ -30,7 +30,7 @@ public class Examples {
 
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.Condition");
         topLevelClass.addImportedType("net.tsingyun.commons.mybatis.Criterion");
-        topLevelClass.addImportedType("net.tsingyun.commons.expression.libs.Operator");
+        topLevelClass.addImportedType("net.tsingyun.commons.core.Operator");
         topLevelClass.addImportedType("net.tsingyun.commons.expression.libs.Conditional");
         topLevelClass.addImportedType("net.tsingyun.commons.expression.libs.Conditionals");
     }
