@@ -157,6 +157,19 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
+        if (names.contains("orgId")) {
+            // 添加orgCodes方法
+            method = new Method();
+            method.addAnnotation("@Override");
+            method.setReturnType(topLevelClass.getType());
+            method.setName("orgIds");
+            method.setVisibility(JavaVisibility.PUBLIC);
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<Long>"), "orgIds"));
+            method.addBodyLine("this.getOredCriteria().forEach(e -> e.andOrgIdIn(orgCodes));");
+            method.addBodyLine("return this;");
+            topLevelClass.addMethod(method);
+        }
+
         if (names.contains("department") && names.contains("orgCode")) {
             // 添加orgCodes方法
             method = new Method();
