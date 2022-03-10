@@ -1,6 +1,7 @@
 package com.itxiaoer.plugins.mybatis;
 
 import com.itxiaoer.commons.core.util.Lists;
+import com.itxiaoer.plugins.mybatis.sqlserver.SqlServers;
 import com.itxiaoer.plugins.mybatis.util.Examples;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
 import org.mybatis.generator.api.IntrospectedColumn;
@@ -272,9 +273,9 @@ public class ExampleExtendPlugin extends PluginAdapter {
 
         List<Method> methods = topLevelClass.getMethods();
 
-        Optional<Method> optional = methods.stream().filter(e -> Objects.equals(e.getName(), "page")).filter(e -> e.getParameters().size() == 2).findAny();
+        boolean sqlServer = SqlServers.isSqlServer(introspectedTable);
 
-        if (!optional.isPresent()) {
+        if (sqlServer) {
             // 增加setRows
             Method setRows = new Method();
             setRows.addAnnotation("@Override");
@@ -283,8 +284,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
             setRows.setVisibility(JavaVisibility.PUBLIC);
             setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "page"));
             setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "pageSize"));
-            setRows.addBodyLine("this.startRows = (page - 1) * pageSize;");
-            setRows.addBodyLine("this.size = pageSize;");
+            setRows.addBodyLine("this.startRows = page * pageSize;");
+            setRows.addBodyLine("this.size = ( page + 1 ) * pageSize;");
             setRows.addBodyLine("return this;");
             topLevelClass.addMethod(setRows);
         }

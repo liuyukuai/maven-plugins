@@ -29,6 +29,26 @@ public class SqlServers {
         return connection.getMetaData().getDriverName().toUpperCase().contains("SQL SERVER");
     }
 
+    public static boolean isSqlServer(IntrospectedTable table) {
+        Connection connection = null;
+        try {
+            connection = connection(table);
+            return isSqlServer(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (Objects.nonNull(connection)) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
     public static void setRemarks(IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn) {
         Connection connection = null;
         try {
@@ -36,7 +56,7 @@ public class SqlServers {
             if (isSqlServer(connection)) {
                 ResultSet tables = tables(connection, introspectedTable, introspectedColumn);
                 boolean next = tables.next();
-                if (next){
+                if (next) {
                     String remarks = tables.getString("REMARKS");
                     introspectedColumn.setRemarks(remarks);
                 }
