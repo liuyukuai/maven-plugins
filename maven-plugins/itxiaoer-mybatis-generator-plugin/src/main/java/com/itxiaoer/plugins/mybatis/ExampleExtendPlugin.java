@@ -254,7 +254,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
 //        page.addBodyLine("return this;");
 //          topLevelClass.addMethod(page);
 
-
         Method sort = new Method();
         sort.addAnnotation("@Override");
         sort.setReturnType(topLevelClass.getType());
@@ -284,8 +283,8 @@ public class ExampleExtendPlugin extends PluginAdapter {
             setRows.setVisibility(JavaVisibility.PUBLIC);
             setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "page"));
             setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "pageSize"));
-            setRows.addBodyLine("this.top = pageSize;");
-            setRows.addBodyLine("this.page = page;");
+            setRows.addBodyLine("this.startRows = (page - 1) * pageSize;");
+            setRows.addBodyLine("this.endRows = page * pageSize;");
             setRows.addBodyLine("return this;");
             topLevelClass.addMethod(setRows);
         }

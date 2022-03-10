@@ -34,43 +34,43 @@ public class SqlServicePlugin extends PluginAdapter {
         PrimitiveTypeWrapper integerWrapper = FullyQualifiedJavaType.getIntInstance().getPrimitiveTypeWrapper();
 
         Field top = new Field();
-        top.setName("top");//为每页显示条数
+        top.setName("startRows");//为每页显示条数
         top.setVisibility(JavaVisibility.PRIVATE);
         top.setType(integerWrapper);
         topLevelClass.addField(top);
 
         Method setTop = new Method();
         setTop.setVisibility(JavaVisibility.PUBLIC);
-        setTop.setName("setTop");
-        setTop.addParameter(new Parameter(integerWrapper, "top"));
-        setTop.addBodyLine("this.top = top;");
+        setTop.setName("setStartRows");
+        setTop.addParameter(new Parameter(integerWrapper, "startRows"));
+        setTop.addBodyLine("this.startRows = startRows;");
         topLevelClass.addMethod(setTop);
 
         Method getTop = new Method();
         getTop.setVisibility(JavaVisibility.PUBLIC);
         getTop.setReturnType(integerWrapper);
-        getTop.setName("getTop");
-        getTop.addBodyLine("return top;");
+        getTop.setName("getStartRows");
+        getTop.addBodyLine("return startRows;");
         topLevelClass.addMethod(getTop);
 
         Field page = new Field();
-        page.setName("page");//当前页数
+        page.setName("endRows");//当前页数
         page.setVisibility(JavaVisibility.PRIVATE);
         page.setType(integerWrapper);
         topLevelClass.addField(page);
 
         Method setPage = new Method();
         setPage.setVisibility(JavaVisibility.PUBLIC);
-        setPage.setName("setPage");
-        setPage.addParameter(new Parameter(integerWrapper, "page"));
-        setPage.addBodyLine("this.page = page;");
+        setPage.setName("setEndRows");
+        setPage.addParameter(new Parameter(integerWrapper, "endRows"));
+        setPage.addBodyLine("this.endRows = endRows;");
         topLevelClass.addMethod(setPage);
 
         Method getPage = new Method();
         getPage.setVisibility(JavaVisibility.PUBLIC);
         getPage.setReturnType(integerWrapper);
-        getPage.setName("getPage");
-        getPage.addBodyLine("return page;");
+        getPage.setName("getEndRows");
+        getPage.addBodyLine("return endRows;");
         topLevelClass.addMethod(getPage);
 
         return true;
@@ -89,7 +89,7 @@ public class SqlServicePlugin extends PluginAdapter {
 
         XmlElement ifTopNotNullElement_end = new XmlElement("if");
         ifTopNotNullElement_end.addAttribute(new Attribute("test", "top != null"));
-        ifTopNotNullElement_end.addElement(new TextElement(")as a)as b where RowNumber BETWEEN (${page}-1)*${top}+1 and ${page}*${top}"));
+        ifTopNotNullElement_end.addElement(new TextElement(")as a)as b where RowNumber BETWEEN (${startRows} and ${endRows}"));
         element.addElement(7, ifTopNotNullElement_end);
 
         return true;
