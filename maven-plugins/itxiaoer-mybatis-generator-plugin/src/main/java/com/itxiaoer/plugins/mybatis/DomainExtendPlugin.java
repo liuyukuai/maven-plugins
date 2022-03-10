@@ -1,5 +1,6 @@
 package com.itxiaoer.plugins.mybatis;
 
+import com.itxiaoer.plugins.mybatis.sqlserver.SqlServers;
 import com.itxiaoer.plugins.mybatis.util.Domains;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,7 @@ public class DomainExtendPlugin extends PluginAdapter {
     public boolean modelFieldGenerated(Field field, TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn, IntrospectedTable introspectedTable, ModelClassType modelClassType) {
 
         String validate = properties.getProperty("validate");
+        SqlServers.setRemarks(introspectedTable, introspectedColumn);
 
         if (!Objects.isNull(validate) && !validate.isEmpty()) {
 
@@ -74,7 +76,6 @@ public class DomainExtendPlugin extends PluginAdapter {
 
             if (!Objects.equals("id", javaProperty)) {
                 // 不能为空
-
 
                 String jdbcTypeName = introspectedColumn.getJdbcTypeName();
                 if (Objects.equals(jdbcTypeName, "BIGINT") || Objects.equals(jdbcTypeName, "INTEGER")) {
@@ -117,6 +118,5 @@ public class DomainExtendPlugin extends PluginAdapter {
         }
         return super.modelFieldGenerated(field, topLevelClass, introspectedColumn, introspectedTable, modelClassType);
     }
-
 
 }

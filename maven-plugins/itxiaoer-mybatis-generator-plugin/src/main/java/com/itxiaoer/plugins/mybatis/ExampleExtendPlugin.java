@@ -284,7 +284,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "page"));
             setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "pageSize"));
             setRows.addBodyLine("this.startRows = (page - 1) * pageSize;");
-            setRows.addBodyLine("this.endRows = page * pageSize;");
+            setRows.addBodyLine("this.size = pageSize;");
             setRows.addBodyLine("return this;");
             topLevelClass.addMethod(setRows);
         }

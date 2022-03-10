@@ -1,7 +1,7 @@
 /*
  *  Copyright@2019 清云智通（北京）科技有限公司 保留所有权利
  */
-package com.itxiaoer.plugins.mybatis;
+package com.itxiaoer.plugins.mybatis.sqlserver;
 
 /**
  * @author liuyk@tsingyun.net
@@ -54,23 +54,23 @@ public class SqlServicePlugin extends PluginAdapter {
         topLevelClass.addMethod(getTop);
 
         Field page = new Field();
-        page.setName("endRows");//当前页数
+        page.setName("size");//当前页数
         page.setVisibility(JavaVisibility.PRIVATE);
         page.setType(integerWrapper);
         topLevelClass.addField(page);
 
         Method setPage = new Method();
         setPage.setVisibility(JavaVisibility.PUBLIC);
-        setPage.setName("setEndRows");
-        setPage.addParameter(new Parameter(integerWrapper, "endRows"));
-        setPage.addBodyLine("this.endRows = endRows;");
+        setPage.setName("setSize");
+        setPage.addParameter(new Parameter(integerWrapper, "size"));
+        setPage.addBodyLine("this.size = size;");
         topLevelClass.addMethod(setPage);
 
         Method getPage = new Method();
         getPage.setVisibility(JavaVisibility.PUBLIC);
         getPage.setReturnType(integerWrapper);
-        getPage.setName("getEndRows");
-        getPage.addBodyLine("return endRows;");
+        getPage.setName("getSize");
+        getPage.addBodyLine("return size;");
         topLevelClass.addMethod(getPage);
 
         return true;
@@ -83,14 +83,23 @@ public class SqlServicePlugin extends PluginAdapter {
     public boolean sqlMapSelectByExampleWithoutBLOBsElementGenerated(XmlElement element, IntrospectedTable introspectedTable) {
 
         XmlElement ifTopNotNullElement = new XmlElement("if");
-        ifTopNotNullElement.addAttribute(new Attribute("test", "top != null"));
-        ifTopNotNullElement.addElement(new TextElement("select * from \r\n" + "(select *, ROW_NUMBER() OVER(order by ${orderByClause}) AS RowNumber from( "));
-        element.addElement(5, ifTopNotNullElement);
+        ifTopNotNullElement.addAttribute(new Attribute("test", "startRows != null"));
+        ifTopNotNullElement.addElement(new TextElement(" offset ${startRows} rows fetch next ${size} rows only "));
+        element.addElement(6, ifTopNotNullElement);
 
-        XmlElement ifTopNotNullElement_end = new XmlElement("if");
-        ifTopNotNullElement_end.addAttribute(new Attribute("test", "top != null"));
-        ifTopNotNullElement_end.addElement(new TextElement(")as a)as b where RowNumber BETWEEN (${startRows} and ${endRows}"));
-        element.addElement(7, ifTopNotNullElement_end);
+//        offset 4 rows fetch next 5 rows only
+//        XmlElement ifTopNotNullElement = new XmlElement("if");
+//        ifTopNotNullElement.addAttribute(new Attribute("test", "startRows != null"));
+//        ifTopNotNullElement.addElement(new TextElement("select * from \r\n" + "(select *, ROW_NUMBER() OVER(order by ${orderByClause}) AS RowNumber from( "));
+//        element.addElement(5, ifTopNotNullElement);
+//
+//
+//
+//
+//        XmlElement ifTopNotNullElement_end = new XmlElement("if");
+//        ifTopNotNullElement_end.addAttribute(new Attribute("test", "startRows != null"));
+//        ifTopNotNullElement_end.addElement(new TextElement(")as a)as b where RowNumber BETWEEN (${startRows} and ${endRows}"));
+//        element.addElement(7, ifTopNotNullElement_end);
 
         return true;
     }
