@@ -1,6 +1,5 @@
 package com.itxiaoer.plugins.mybatis;
 
-
 import com.itxiaoer.commons.core.util.Lists;
 import com.itxiaoer.plugins.mybatis.util.Examples;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
@@ -11,6 +10,7 @@ import org.mybatis.generator.api.dom.java.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,7 +49,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
             shortName = primaryKeyColumns.get(0).getFullyQualifiedJavaType().getShortName();
         }
 
-
         // interface
         String interfaceClass = properties.getProperty("interface") + "<" + shortName + ">";
 
@@ -84,10 +83,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         Method method = new Method();
 
         // 名称集合
-        List<String> names = Lists.empty(introspectedTable.getAllColumns())
-                .stream()
-                .map(IntrospectedColumn::getJavaProperty)
-                .collect(Collectors.toList());
+        List<String> names = Lists.empty(introspectedTable.getAllColumns()).stream().map(IntrospectedColumn::getJavaProperty).collect(Collectors.toList());
 
         if (names.contains("id")) {
             method.addAnnotation("@Override");
@@ -101,11 +97,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         }
 
         if (names.contains("tenantId")) {
-            IntrospectedColumn field = Lists.empty(introspectedTable.getAllColumns())
-                    .stream()
-                    .filter(e -> Objects.equals(e.getJavaProperty(), "tenantId"))
-                    .findAny()
-                    .orElse(null);
+            IntrospectedColumn field = Lists.empty(introspectedTable.getAllColumns()).stream().filter(e -> Objects.equals(e.getJavaProperty(), "tenantId")).findAny().orElse(null);
 
             String className = field.getFullyQualifiedJavaType().getShortName();
 
@@ -143,7 +135,6 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
-
         if (names.contains("orgCode")) {
             // 添加orgCodes方法
             method = new Method();
@@ -168,6 +159,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             method.addBodyLine("this.getOredCriteria().forEach(e -> e.andOrgIdIn(orgIds));");
             method.addBodyLine("return this;");
             topLevelClass.addMethod(method);
+
         }
 
         if (names.contains("department") && names.contains("orgCode")) {
@@ -227,11 +219,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
         init.addAnnotation("@Override");
         topLevelClass.addMethod(init);
 
-        topLevelClass.getMethods()
-                .stream()
-                .filter(Method::isConstructor)
-                .forEach(e -> e.setVisibility(JavaVisibility.PRIVATE));
-
+        topLevelClass.getMethods().stream().filter(Method::isConstructor).forEach(e -> e.setVisibility(JavaVisibility.PRIVATE));
 
         Method getColumn = new Method();
         getColumn.setReturnType(new FullyQualifiedJavaType("String"));
@@ -248,23 +236,23 @@ public class ExampleExtendPlugin extends PluginAdapter {
         getColumn.addBodyLine("throw new RuntimeException(name + \"属性名不合法\");");
         topLevelClass.addMethod(getColumn);
 
-
-        Method page = new Method();
-        page.addAnnotation("@Override");
-        page.setReturnType(topLevelClass.getType());
-        page.setName("page");
-        page.setVisibility(JavaVisibility.PUBLIC);
-        page.addParameter(new Parameter(new FullyQualifiedJavaType("Paging"), "paging"));
-        page.addBodyLine("if (!Objects.isNull(paging)) {");
-        page.addBodyLine("PageRequest pageRequest = PagingUtils.of(paging);");
-        page.addBodyLine("List<Sort> sorts = pageRequest.getSorts();");
-        page.addBodyLine("if (Lists.iterable(sorts)) {");
-        page.addBodyLine("String orders = sorts.stream().map(e -> this.getColumn(e.getName()) + \" \" + e.getDirection()).collect(Collectors.joining(\",\"));");
-        page.addBodyLine(" this.setOrderByClause(orders);");
-        page.addBodyLine("}");
-        page.addBodyLine("this.page(pageRequest.getPage(), pageRequest.getSize());");
-        page.addBodyLine("}");
-        page.addBodyLine("return this;");
+//        Method page = new Method();
+//        page.addAnnotation("@Override");
+//        page.setReturnType(topLevelClass.getType());
+//        page.setName("page");
+//        page.setVisibility(JavaVisibility.PUBLIC);
+//        page.addParameter(new Parameter(new FullyQualifiedJavaType("Paging"), "paging"));
+//        page.addBodyLine("if (!Objects.isNull(paging)) {");
+//        page.addBodyLine("PageRequest pageRequest = PagingUtils.of(paging);");
+//        page.addBodyLine("List<Sort> sorts = pageRequest.getSorts();");
+//        page.addBodyLine("if (Lists.iterable(sorts)) {");
+//        page.addBodyLine("String orders = sorts.stream().map(e -> this.getColumn(e.getName()) + \" \" + e.getDirection()).collect(Collectors.joining(\",\"));");
+//        page.addBodyLine(" this.setOrderByClause(orders);");
+//        page.addBodyLine("}");
+//        page.addBodyLine("this.page(pageRequest.getPage(), pageRequest.getSize());");
+//        page.addBodyLine("}");
+//        page.addBodyLine("return this;");
+//          topLevelClass.addMethod(page);
 
 
         Method sort = new Method();
@@ -283,7 +271,24 @@ public class ExampleExtendPlugin extends PluginAdapter {
         // 处理内部类
         Examples.doInnerClasses(topLevelClass, domainObjectName);
 
-        topLevelClass.addMethod(page);
+        List<Method> methods = topLevelClass.getMethods();
+
+        Optional<Method> optional = methods.stream().filter(e -> Objects.equals(e.getName(), "page")).filter(e -> e.getParameters().size() == 2).findAny();
+
+        if (!optional.isPresent()) {
+            // 增加setRows
+            Method setRows = new Method();
+            setRows.addAnnotation("@Override");
+            setRows.setReturnType(topLevelClass.getType());
+            setRows.setName("page");
+            setRows.setVisibility(JavaVisibility.PUBLIC);
+            setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "page"));
+            setRows.addParameter(new Parameter(new FullyQualifiedJavaType("Integer"), "pageSize"));
+            setRows.addBodyLine("this.top = pageSize;");
+            setRows.addBodyLine("this.page = page;");
+            setRows.addBodyLine("return this;");
+            topLevelClass.addMethod(setRows);
+        }
         return super.modelExampleClassGenerated(topLevelClass, introspectedTable);
     }
 }

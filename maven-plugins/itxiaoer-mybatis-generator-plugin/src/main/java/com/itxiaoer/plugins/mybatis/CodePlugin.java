@@ -26,7 +26,6 @@ public class CodePlugin extends PluginAdapter {
      * 生成额外的java类
      *
      * @param introspectedTable 表数据
-     * @return
      */
     @Override
     public List<GeneratedJavaFile> contextGenerateAdditionalJavaFiles(IntrospectedTable introspectedTable) {
