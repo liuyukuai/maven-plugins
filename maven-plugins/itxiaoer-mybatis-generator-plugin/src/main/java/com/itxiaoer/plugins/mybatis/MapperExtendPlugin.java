@@ -1,6 +1,7 @@
 package com.itxiaoer.plugins.mybatis;
 
 import com.itxiaoer.commons.core.util.Lists;
+import com.itxiaoer.plugins.mybatis.util.Elements;
 import com.itxiaoer.plugins.mybatis.util.JavaDocUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +15,10 @@ import org.mybatis.generator.api.dom.java.TopLevelClass;
 import org.mybatis.generator.api.dom.xml.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * mybatis 代码生成扩展（interface）
@@ -43,6 +46,8 @@ public class MapperExtendPlugin extends PluginAdapter {
             // 处理参数的问题
             JavaDocUtils.addJavaDoc(e);
         });
+
+        this.doReplace(interfaze, methods);
 
         interfaze.addAnnotation("@SuppressWarnings(\"ALL\")");
         // domain name
@@ -82,8 +87,41 @@ public class MapperExtendPlugin extends PluginAdapter {
 
     @Override
     public boolean sqlMapDocumentGenerated(Document document, IntrospectedTable introspectedTable) {
-        String property = this.properties.getProperty("ignore", "false");
+        ReplaceMapperGenerator elementGenerator = new ReplaceMapperGenerator();
+        elementGenerator.setContext(context);
+        elementGenerator.setIntrospectedTable(introspectedTable);
+        elementGenerator.addElements(document.getRootElement());
+        this.doIgnore(document);
+        return super.sqlMapDocumentGenerated(document, introspectedTable);
+    }
 
+    private void doReplace(Interface interfaze, List<Method> methodList) {
+        List<Method> methods = new ArrayList<>();
+        Lists.empty(methodList).forEach(method -> {
+            if (method.getName().contains("insert") || method.getName().contains("Insert")) {
+                Method m = new Method(method);
+                m.setName(Elements.replace(method.getName()));
+                methods.add(m);
+            }
+        });
+        Lists.empty(methods).forEach(interfaze::addMethod);
+    }
+
+    private void doReplace(Document document) {
+        XmlElement rootElement = document.getRootElement();
+        List<Element> elements = Lists.empty(rootElement.getElements())
+                                      .stream()
+                                      .map(e -> (XmlElement) e)
+                                      .filter(Elements::isInsert)
+                                      .map(Elements::replace)
+                                      .collect(Collectors.toList());
+        System.out.println("##################################");
+        System.out.println(elements.size());
+        Lists.empty(elements).forEach(rootElement::addElement);
+    }
+
+    private void doIgnore(Document document) {
+        String property = this.properties.getProperty("ignore", "false");
         if (StringUtils.isNotBlank(property) && Boolean.parseBoolean(property)) {
             XmlElement rootElement = document.getRootElement();
             rootElement.getElements()
@@ -110,8 +148,6 @@ public class MapperExtendPlugin extends PluginAdapter {
                            }
                        });
         }
-
-        return super.sqlMapDocumentGenerated(document, introspectedTable);
     }
 }
 
