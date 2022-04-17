@@ -10,8 +10,8 @@ import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,10 +44,12 @@ public class ExampleExtendPlugin extends PluginAdapter {
         }
 
         List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
-
+        String primaryKeyType = introspectedTable.getPrimaryKeyType();
         String shortName = "Long";
         if (Lists.iterable(primaryKeyColumns)) {
-            shortName = primaryKeyColumns.get(0).getFullyQualifiedJavaType().getShortName();
+            shortName = primaryKeyColumns.size() > 1 ? primaryKeyType : primaryKeyColumns.get(0)
+                                                                                         .getFullyQualifiedJavaType()
+                                                                                         .getShortName();
         }
 
         // interface
@@ -84,21 +86,27 @@ public class ExampleExtendPlugin extends PluginAdapter {
         Method method = new Method();
 
         // 名称集合
-        List<String> names = Lists.empty(introspectedTable.getAllColumns()).stream().map(IntrospectedColumn::getJavaProperty).collect(Collectors.toList());
+        Map<String, String> names = Lists.empty(introspectedTable.getAllColumns())
+                                         .stream()
+                                         .collect(Collectors.toMap(e -> e.getJavaProperty(), e -> e.getFullyQualifiedJavaType()
+                                                                                                   .getShortName()));
 
-        if (names.contains("id")) {
-            method.addAnnotation("@Override");
+        if (names.containsKey("id") && Objects.equals(names.get("id"), shortName)) {
             method.setReturnType(topLevelClass.getType());
             method.setName("ids");
             method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<" + shortName + ">"), "ids"));
+            method.addParameter(new Parameter(new FullyQualifiedJavaType("List<" + names.get("id") + ">"), "ids"));
             method.addBodyLine("this.getOredCriteria().forEach(e -> e.andIdIn(ids));");
             method.addBodyLine("return this;");
             topLevelClass.addMethod(method);
         }
 
-        if (names.contains("tenantId")) {
-            IntrospectedColumn field = Lists.empty(introspectedTable.getAllColumns()).stream().filter(e -> Objects.equals(e.getJavaProperty(), "tenantId")).findAny().orElse(null);
+        if (names.containsKey("tenantId")) {
+            IntrospectedColumn field = Lists.empty(introspectedTable.getAllColumns())
+                                            .stream()
+                                            .filter(e -> Objects.equals(e.getJavaProperty(), "tenantId"))
+                                            .findAny()
+                                            .orElse(null);
 
             String className = field.getFullyQualifiedJavaType().getShortName();
 
@@ -117,7 +125,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             }
         }
 
-        if (names.contains("department")) {
+        if (names.containsKey("department")) {
             // 添加orgCodes方法
             method = new Method();
             method.addAnnotation("@Override");
@@ -136,7 +144,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
-        if (names.contains("orgCode")) {
+        if (names.containsKey("orgCode")) {
             // 添加orgCodes方法
             method = new Method();
             method.addAnnotation("@Override");
@@ -149,7 +157,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
-        if (names.contains("orgId")) {
+        if (names.containsKey("orgId")) {
             // 添加orgCodes方法
             method = new Method();
             method.addAnnotation("@Override");
@@ -163,7 +171,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
 
         }
 
-        if (names.contains("department") && names.contains("orgCode")) {
+        if (names.containsKey("department") && names.containsKey("orgCode")) {
             // 添加orgCodes方法
             method = new Method();
             method.addAnnotation("@Override");
@@ -188,7 +196,7 @@ public class ExampleExtendPlugin extends PluginAdapter {
             topLevelClass.addMethod(method);
         }
 
-        if (!names.contains("department") && names.contains("orgCode")) {
+        if (!names.containsKey("department") && names.containsKey("orgCode")) {
             // 添加orgCodes方法
             method = new Method();
             method.addAnnotation("@Override");
@@ -220,7 +228,10 @@ public class ExampleExtendPlugin extends PluginAdapter {
         init.addAnnotation("@Override");
         topLevelClass.addMethod(init);
 
-        topLevelClass.getMethods().stream().filter(Method::isConstructor).forEach(e -> e.setVisibility(JavaVisibility.PRIVATE));
+        topLevelClass.getMethods()
+                     .stream()
+                     .filter(Method::isConstructor)
+                     .forEach(e -> e.setVisibility(JavaVisibility.PRIVATE));
 
         Method getColumn = new Method();
         getColumn.setReturnType(new FullyQualifiedJavaType("String"));

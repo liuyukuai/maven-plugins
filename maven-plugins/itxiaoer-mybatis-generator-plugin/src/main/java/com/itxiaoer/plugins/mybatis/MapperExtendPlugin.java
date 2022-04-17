@@ -53,12 +53,12 @@ public class MapperExtendPlugin extends PluginAdapter {
         // domain name
         String domainObjectName = introspectedTable.getFullyQualifiedTable().getDomainObjectName();
         // key
-
         List<IntrospectedColumn> primaryKeyColumns = introspectedTable.getPrimaryKeyColumns();
+        String primaryKeyType = introspectedTable.getPrimaryKeyType();
 
         String shortName = "Long";
         if (Lists.iterable(primaryKeyColumns)) {
-            shortName = primaryKeyColumns.get(0).getFullyQualifiedJavaType().getShortName();
+            shortName = primaryKeyColumns.size() > 1 ? primaryKeyType : primaryKeyColumns.get(0).getFullyQualifiedJavaType().getShortName();
         }
 
         // exampleType
