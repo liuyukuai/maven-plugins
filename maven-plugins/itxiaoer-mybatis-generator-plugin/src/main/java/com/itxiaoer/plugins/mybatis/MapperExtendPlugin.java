@@ -96,28 +96,34 @@ public class MapperExtendPlugin extends PluginAdapter {
     }
 
     private void doReplace(Interface interfaze, List<Method> methodList) {
-        List<Method> methods = new ArrayList<>();
-        Lists.empty(methodList).forEach(method -> {
-            if (method.getName().contains("insert") || method.getName().contains("Insert")) {
-                Method m = new Method(method);
-                m.setName(Elements.replace(method.getName()));
-                methods.add(m);
-            }
-        });
-        Lists.empty(methods).forEach(interfaze::addMethod);
+        String property = this.properties.getProperty("replace", "false");
+        if (StringUtils.isNotBlank(property) && Boolean.parseBoolean(property)) {
+            List<Method> methods = new ArrayList<>();
+            Lists.empty(methodList).forEach(method -> {
+                if (method.getName().contains("insert") || method.getName().contains("Insert")) {
+                    Method m = new Method(method);
+                    m.setName(Elements.replace(method.getName()));
+                    methods.add(m);
+                }
+            });
+            Lists.empty(methods).forEach(interfaze::addMethod);
+        }
     }
 
     private void doReplace(Document document) {
-        XmlElement rootElement = document.getRootElement();
-        List<Element> elements = Lists.empty(rootElement.getElements())
-                                      .stream()
-                                      .map(e -> (XmlElement) e)
-                                      .filter(Elements::isInsert)
-                                      .map(Elements::replace)
-                                      .collect(Collectors.toList());
-        System.out.println("##################################");
-        System.out.println(elements.size());
-        Lists.empty(elements).forEach(rootElement::addElement);
+        String property = this.properties.getProperty("replace", "false");
+        if (StringUtils.isNotBlank(property) && Boolean.parseBoolean(property)) {
+            XmlElement rootElement = document.getRootElement();
+            List<Element> elements = Lists.empty(rootElement.getElements())
+                                          .stream()
+                                          .map(e -> (XmlElement) e)
+                                          .filter(Elements::isInsert)
+                                          .map(Elements::replace)
+                                          .collect(Collectors.toList());
+            System.out.println("##################################");
+            System.out.println(elements.size());
+            Lists.empty(elements).forEach(rootElement::addElement);
+        }
     }
 
     private void doIgnore(Document document) {
