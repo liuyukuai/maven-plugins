@@ -54,15 +54,12 @@
         <tag>v1.2.0</tag>
     </scm>
 
+
     <distributionManagement>
         <snapshotRepository>
-            <id>TsingYun-java-Snapshot</id>
-            <url>http://repo.tsingyun.net/repository/tsingyun-java-snapshot/</url>
+            <id>tsingyun-feed</id>
+            <url>https://pkgs.dev.azure.com/swissre/SPLCHINA-SPLCHINA/_packaging/tsingyun-feed/maven/v1</url>
         </snapshotRepository>
-        <repository>
-            <id>TsingYun-java-Release</id>
-            <url>http://repo.tsingyun.net/repository/tsingyun-java-release/</url>
-        </repository>
     </distributionManagement>
 
 
